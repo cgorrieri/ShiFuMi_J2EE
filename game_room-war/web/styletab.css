@@ -1,0 +1,177 @@
+body {
+	background: url(images/bg.png) repeat;
+}
+
+.droite {
+	margin: 0px 50px 50px 50px;
+	position: absolute;
+	right: 0px;
+	width: 45%;
+}
+
+.tabdefie {
+	width: 100%;
+}
+
+.gauche {
+	margin: 0px 50px 50px 50px;
+	position: absolute;
+	left: 0px;
+	width: 45%;
+	height: 75%;
+}
+
+.tabtous {
+	width: 100%;
+}
+
+.boutondefier {
+	width: 120px;
+	height: 40px;
+	font-size: 22px;
+	margin: 50px;
+	background-color: #e8edff;
+	alig
+}
+
+#rounded-corner
+{
+	font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+	font-size: 12px;
+	text-align: left;
+	border-collapse: collapse;
+}
+#rounded-corner thead th.rounded-company
+{
+	background: #D4DEDF url('table-images/left.png') left -1px no-repeat;
+}
+#rounded-corner thead th.rounded-q4
+{
+	background: #D4DEDF url('table-images/right.png') right -1px no-repeat;
+}
+#rounded-corner th
+{
+	padding: 8px;
+	font-weight: normal;
+	font-size: 13px;
+	color: #039;
+	background: #D4DEDF;
+}
+#rounded-corner td
+{
+	padding: 8px;
+	background: #F3F3F3;
+	border-top: 1px solid #fff;
+	color: #669;
+}
+#rounded-corner tfoot td.rounded-foot-left
+{
+	background: #F3F3F3 url('table-images/botleft.png') left bottom no-repeat;
+}
+#rounded-corner tfoot td.rounded-foot-right
+{
+	background: #F3F3F3 url('table-images/botright.png') right bottom no-repeat;
+}
+#rounded-corner tbody tr:hover td
+{
+	background: #d0dafd;
+}
+
+/* Login button */
+.button {
+	padding: 11px 25px;
+	margin: 20px;
+	
+	font-family: 'Bree Serif', serif;
+	font-weight: 300;
+	font-size: 18px;
+	color: #fff;
+	text-shadow: 0px 1px 0 rgba(0,0,0,0.25);
+	
+	background: #045FB4;
+	border: 1px solid #08088A;
+	border-radius: 5px;
+	cursor: pointer;
+	
+	box-shadow: inset 0 0 2px rgba(256,256,256,0.75);
+	-moz-box-shadow: inset 0 0 2px rgba(256,256,256,0.75);
+	-webkit-box-shadow: inset 0 0 2px rgba(256,256,256,0.75);
+}
+
+.button:hover {
+	background: #3f9db8;
+	border: 1px solid rgba(256,256,256,0.75);
+	
+	box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+	-moz-box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+	-webkit-box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+}
+
+.button:focus {
+	position: relative;
+	bottom: -1px;
+	
+	background: #56c2e1;
+	
+	box-shadow: inset 0 1px 6px rgba(256,256,256,0.75);
+	-moz-box-shadow: inset 0 1px 6px rgba(256,256,256,0.75);
+	-webkit-box-shadow: inset 0 1px 6px rgba(256,256,256,0.75);
+}
+
+h1 { 
+	text-align: center;
+	color: #414848;
+	font-family: "Bree Serif", serif;
+	font-size: 50px;
+	font-weight: 300;
+	line-height: 34px;
+	margin: 30px;
+	text-shadow: 1px 1px 0px;
+}
+
+h2 { 
+	color: #414848;
+	font-family: "Bree Serif", serif;
+	font-size: 28px;
+	font-weight: 300;
+	line-height: 34px;
+	margin-bottom: 10px;
+	text-shadow: 1px 1px 0px;
+}
+
+.header{
+	width: 100%;
+	text-align: center;
+	margin-left : 20px;
+}
+
+.header .message{
+	font-family: 'Bree Serif', serif;
+	margin: 10px;
+	
+	font-weight: 200;
+	font-size: 18px;
+	color: #fff;
+	text-shadow: 0px 1px 0 rgba(0,0,0,0.25);
+	
+	box-shadow: inset 0 0 2px rgba(256,256,256,0.75);
+	-moz-box-shadow: inset 0 0 2px rgba(256,256,256,0.75);
+	-webkit-box-shadow: inset 0 0 2px rgba(256,256,256,0.75);
+	width: 95%;
+}
+
+.header .message .erreur{
+	border: 3px solid red;
+	border-radius: 5px;
+	background-color: #FE2E2E;
+	padding: 5px;
+}
+
+.header .message .ok{
+	border: 3px solid green;
+	padding: 5px;
+	border-radius: 5px;
+	background-color: #31B404;
+	background-image: url(images/warning.png);
+    background-repeat: no-repeat;
+}

@@ -1,0 +1,56 @@
+.jeux {
+	width: 98%;
+	height: 80%;
+	margin: 10px;
+}
+
+.joueurhaut {
+	width: 100%;
+	margin-top: 10px;
+}
+
+.plateau {
+	width: 100%;
+	height: 30%;
+	margin-top: 10px;
+	background-image: url(../images/bois.jpg);
+    background-repeat: repeat;
+    border-radius: 17px;
+}
+
+.joueurbas {
+	width: 100%;
+	margin-top: 10px;
+}
+
+.joueurhaut .ima{
+	margin-right: 10%;
+	margin-left: 10%;
+	cursor: pointer;
+	border: 7px solid black;
+	border-radius: 12px;
+}
+
+.joueurbas .ima{
+	margin-right: 10%;
+	margin-left: 10%;
+	border: 5px solid black;
+	border-radius: 17px;
+}
+
+.plateau .ima{
+	border: 5px solid black;
+	border-radius: 17px;
+	vertical-align: center;
+}
+
+.headNom {
+	width: 100%;
+	border: 3px solid #CCCFFF;
+	border-radius: 5px;
+	background-color: #CCCCCC;
+	padding: 5px;
+	font-size: 30px;
+	text-align: center;
+	font-family: 'Bree Serif', serif;
+}
