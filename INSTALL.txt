@@ -1,0 +1,7 @@
+# Install instruction
+Creer un projet entreprise java au nom de game_room
+ouvrir une console git. aller dans le dossier "game_room" creer par NetBeans.
+Faire :
+git init
+git remote add origin git@github.com:cgorrieri/ShiFuMi_J2EE.git (ou votre repository si different)
+git pull origin master -f
