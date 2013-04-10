@@ -18,8 +18,12 @@ public interface PlayerSessionBeanLocal {
     void persist(Object o);
     
     List getAllPlayers();
+    
+    List getConnectedPlayers();
 
-    void findPlayer(String login, String mdp) throws PlayerNotFoundException;
+    Player findPlayer(String login, String mdp) throws PlayerNotFoundException;
+    
+    void connexion(String login, String mdp) throws PlayerNotFoundException;
     
     void defier(String pseudo);
     

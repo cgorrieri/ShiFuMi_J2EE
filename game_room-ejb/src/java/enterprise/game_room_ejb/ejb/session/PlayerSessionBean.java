@@ -42,13 +42,32 @@ public class PlayerSessionBean implements PlayerSessionBeanLocal {
     }
     
     @Override
-    public void findPlayer(String pseudo, String mdp) throws PlayerNotFoundException {
+    public List getConnectedPlayers() {
+        return (List) em.createNamedQuery("getConnectedPlayersExceptPseudo")
+                .setParameter("pseudo", player.getPseudo())
+                .getResultList();
+    }
+    
+    @Override
+    public Player findPlayer(String pseudo, String mdp) throws PlayerNotFoundException {
+        List l = (List)em.createNamedQuery("findPlayer")
+                .setParameter("pseudo", pseudo)
+                .setParameter("mdp", mdp)
+                .getResultList();
+        if(l.size() == 0) throw new PlayerNotFoundException();
+        return (Player) l.get(0);
+    }
+    
+    @Override
+    public void connexion(String pseudo, String mdp) throws PlayerNotFoundException {
         List l = (List)em.createNamedQuery("findPlayer")
                 .setParameter("pseudo", pseudo)
                 .setParameter("mdp", mdp)
                 .getResultList();
         if(l.size() == 0) throw new PlayerNotFoundException();
         player = (Player) l.get(0);
+        player.setConnected(true);
+        persist(player);
     }
 
     @Override

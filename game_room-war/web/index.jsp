@@ -1,4 +1,4 @@
-<%@page import="enterprise.game_room_ejb.common.PlayerNotFoundException"%>
+ï»¿<%@page import="enterprise.game_room_ejb.common.PlayerNotFoundException"%>
 <%@page import="enterprise.game_room_ejb.ejb.session.PlayerSessionBeanLocal"%>
 <%@page import="enterprise.game_room_ejb.persistence.Player"%>
 <%@page import="javax.naming.InitialContext"%>
@@ -54,7 +54,7 @@
 
                                 PlayerSessionBeanLocal playerSession = (PlayerSessionBeanLocal) o;
 
-                                playerSession.findPlayer(pseudo, mdp);
+                                playerSession.connexion(pseudo, mdp);
                                 %>
                                 <div class="ok">Connexion réussie.<br/>
                                     Redirection vers la salle de jeux...

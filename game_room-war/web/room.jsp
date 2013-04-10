@@ -41,10 +41,9 @@
                     </thead>
                     <tbody>
                         <%
-
                             if (session.getAttribute("PSB") != null) {
                                 PlayerSessionBeanLocal psb = (PlayerSessionBeanLocal) session.getAttribute("PSB");
-                                List players = psb.getAllPlayers();
+                                List players = psb.getConnectedPlayers();
                                 for (int i = 0; i < players.size(); i++) {
                                     Player p = (Player) players.get(i);
                         %>
@@ -59,6 +58,9 @@
                         } else {
                         %>
                         <p>Vous n'etes pas idetifié...</p>
+                        <script type="text/javascript">
+                            window.location.href="index.jsp";
+                        </script>
                         <%                            }
                         %>
                     </tbody>
@@ -66,13 +68,13 @@
 
                 <center>
                     <input type="hidden" name="type" value="defier"/>
-                    <input class="button" type="submit" value="DÃ©fier !"/>
+                    <input class="button" type="submit" value="Défier !"/>
                     <input class="button" type="button" value="Observer !"/>
                 </center>
             </form>
         </div>
         <div class="droite">
-            <h2><center>Liste des dÃ©fis</center></h2>
+            <h2><center>Liste des défis</center></h2>
             <form action="" method="GET">
                 <table id="rounded-corner" class="tabdefie">
                     <thead>

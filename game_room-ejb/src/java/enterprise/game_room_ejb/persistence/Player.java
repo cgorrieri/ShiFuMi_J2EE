@@ -5,12 +5,15 @@
 package enterprise.game_room_ejb.persistence;
 
 import java.io.Serializable;
+import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.validation.constraints.NotNull;
 
 /**
  *
@@ -20,7 +23,8 @@ import javax.persistence.NamedQuery;
 @NamedQueries(
     value={@NamedQuery(name="findPlayer", query="select object(c) from Player c where c.pseudo= :pseudo and c.mdp= :mdp"),
     @NamedQuery(name="getAllPlayers", query="select object(c) from Player c"),
-    @NamedQuery(name="getAllPlayersExceptPseudo", query="select object(c) from Player c where c.pseudo <> :pseudo")}
+    @NamedQuery(name="getAllPlayersExceptPseudo", query="select object(c) from Player c where c.pseudo <> :pseudo"),
+    @NamedQuery(name="getConnectedPlayersExceptPseudo", query="select object(c) from Player c where c.pseudo <> :pseudo and c.connected = 1")}
 )
 public class Player implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -35,10 +39,14 @@ public class Player implements Serializable {
     public void setId(Long id) {
         this.id = id;
     }
-    
+    @NotNull
     private String pseudo;
+    @NotNull
     private String email;
+    @NotNull
     private String mdp;
+    @NotNull
+    private boolean connected = false;
 
     public String getPseudo() {
         return pseudo;
@@ -63,6 +71,15 @@ public class Player implements Serializable {
     public void setMdp(String mdp) {
         this.mdp = mdp;
     }
+    
+    public boolean getConnected() {
+        return connected;
+    }
+    
+    public void setConnected(boolean b) {
+        connected = b;
+    }
+    
 
     public Player() {
         this.pseudo = "pseudo";
@@ -108,5 +125,4 @@ public class Player implements Serializable {
     public String toString() {
         return "enterprise.belli_gorrieri_lestel_shifumi_ejb.persistence.Player1[ id=" + id + " ]";
     }
-    
 }
