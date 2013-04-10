@@ -7,6 +7,8 @@ package enterprise.game_room_ejb.ejb.session;
 import enterprise.game_room_ejb.common.PlayerNotFoundException;
 import enterprise.game_room_ejb.persistence.Player;
 import java.util.List;
+import javax.ejb.CreateException;
+import javax.ejb.Remove;
 import javax.ejb.Stateful;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -17,10 +19,9 @@ import javax.persistence.PersistenceContext;
  */
 @Stateful
 public class PlayerSessionBean implements PlayerSessionBeanLocal {
-    
+
     @PersistenceContext(unitName = "persistence_sample")
     private EntityManager em;
-
     private Player player;
 
     public Player getPlayer() {
@@ -30,44 +31,55 @@ public class PlayerSessionBean implements PlayerSessionBeanLocal {
     public void setPlayer(Player player) {
         this.player = player;
     }
-    
+
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
-
     @Override
     public List getAllPlayers() {
-        return (List)em.createNamedQuery("getAllPlayersExceptPseudo")
+        return (List) em.createNamedQuery("getAllPlayersExceptPseudo")
                 .setParameter("pseudo", player.getPseudo())
                 .getResultList();
     }
-    
+
     @Override
     public List getConnectedPlayers() {
         return (List) em.createNamedQuery("getConnectedPlayersExceptPseudo")
                 .setParameter("pseudo", player.getPseudo())
                 .getResultList();
     }
-    
+
     @Override
     public Player findPlayer(String pseudo, String mdp) throws PlayerNotFoundException {
-        List l = (List)em.createNamedQuery("findPlayer")
+        List l = (List) em.createNamedQuery("findPlayer")
                 .setParameter("pseudo", pseudo)
                 .setParameter("mdp", mdp)
                 .getResultList();
-        if(l.size() == 0) throw new PlayerNotFoundException();
+        if (l.size() == 0) {
+            throw new PlayerNotFoundException();
+        }
         return (Player) l.get(0);
     }
-    
+
     @Override
     public void connexion(String pseudo, String mdp) throws PlayerNotFoundException {
-        List l = (List)em.createNamedQuery("findPlayer")
+        List l = (List) em.createNamedQuery("findPlayer")
                 .setParameter("pseudo", pseudo)
                 .setParameter("mdp", mdp)
                 .getResultList();
-        if(l.size() == 0) throw new PlayerNotFoundException();
+        if (l.size() == 0) {
+            throw new PlayerNotFoundException();
+        }
         player = (Player) l.get(0);
         player.setConnected(true);
         persist(player);
+    }
+    
+    @Override
+    @Remove
+    public void deconnexion() {
+        player.setConnected(false);
+        em.merge(player);
+        player = null;
     }
 
     @Override
@@ -85,4 +97,12 @@ public class PlayerSessionBean implements PlayerSessionBeanLocal {
         em.persist(o);
     }
 
+    public void ejbCreate() throws CreateException {   // when bean is created
+    }
+
+    public void ejbActivate() {    // when bean is activated
+    }
+
+    public void ejbPassivate() {    // when bean is deactivated
+    }
 }

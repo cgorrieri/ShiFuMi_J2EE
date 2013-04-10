@@ -26,6 +26,8 @@
                 </div> -->
             </div>
         </div>
+        
+        <a href="index.jsp?deconnexion=true">Déconnexion</a>
 
         <div class="gauche">
             <h2><center>Liste des concurrents</center></h2>

@@ -25,6 +25,8 @@ public interface PlayerSessionBeanLocal {
     
     void connexion(String login, String mdp) throws PlayerNotFoundException;
     
+    void deconnexion();
+    
     void defier(String pseudo);
     
     void accepterDefi(String pseudo);

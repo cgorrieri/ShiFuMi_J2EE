@@ -45,6 +45,7 @@
                 <%
                     String pseudo = request.getParameter("username");
                     String mdp = request.getParameter("password");
+                    String deconnexion = request.getParameter("deconnexion");
                     
                     if (pseudo != null && mdp != null) {
                         if (!"".equals(pseudo) && !"".equals(mdp)) {
@@ -56,7 +57,7 @@
 
                                 playerSession.connexion(pseudo, mdp);
                                 %>
-                                <div class="ok">Connexion r�ussie.<br/>
+                                <div class="ok">Connexion r�ussie.<br/>
                                     Redirection vers la salle de jeux...
                                 </div>
                                 <script type="text/javascript">
@@ -74,6 +75,15 @@
                              <div class="erreur" id="ima">Identifiant ou mot de passe vide</div>
                             <%            
                         }
+                     } else if (deconnexion != null && "true".equals(deconnexion)) {
+                         PlayerSessionBeanLocal psb = (PlayerSessionBeanLocal) session.getAttribute("PSB");
+                         psb.deconnexion();
+                         session.removeAttribute("PSB");
+                         %>
+                                <div class="ok">Connexion r�ussie.<br/>
+                                    Vous avez bien été déconnecté. A bientôt !
+                                </div>
+                         <%
                      }
                 %>
                 </div>
