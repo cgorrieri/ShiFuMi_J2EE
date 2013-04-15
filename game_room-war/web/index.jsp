@@ -57,7 +57,7 @@
 
                                 playerSession.connexion(pseudo, mdp);
                                 %>
-                                <div class="ok">Connexion r�ussie.<br/>
+                                <div class="ok">Connexion réussie.<br/>
                                     Redirection vers la salle de jeux...
                                 </div>
                                 <script type="text/javascript">
@@ -89,7 +89,7 @@
                 </div>
     
                 <div class="content">
-                    <input name="username" type="text" required="required" pattern="[A-Za-Z0-9_-]{3,15} "class="input username" placeholder="Pseudo" />
+                    <input name="username" type="text" required="required" pattern="[A-Za-Z0-9_-]{3,15}" class="input username" placeholder="Pseudo" />
                     <input name="password" type="password" required="required" class="input password" placeholder="Mot de passe" />
                 </div>
 

@@ -30,4 +30,6 @@ public interface PlayerSessionBeanLocal {
     void defier(String pseudo);
     
     void accepterDefi(String pseudo);
+    
+    Player getPlayer();
 }

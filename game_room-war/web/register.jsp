@@ -77,6 +77,7 @@ $(document).ready(function() {
 
     if (pseudo != null && !"".equals(pseudo)) {
         try {
+            
             InitialContext ic = new InitialContext();
             Object o = ic.lookup("java:global/game_room/game_room-ejb/PlayerSessionBean");
 
@@ -100,11 +101,11 @@ $(document).ready(function() {
 %>
         <div class="message">
             <div class="erreur">
-                Impossible d'acceder à la base de données
+                Inscription échoué, le pseudo <% out.print(pseudo); %> existe déjà
             </div>
         </div>
 <%
-    } 
+    }
 }
 %>
 

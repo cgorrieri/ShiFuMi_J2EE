@@ -4,6 +4,7 @@
  */
 package enterprise.game_room_ejb.persistence;
 
+import enterprise.game_room_ejb.common.EnumState;
 import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -39,7 +40,7 @@ public class Player implements Serializable {
     public void setId(Long id) {
         this.id = id;
     }
-    @NotNull
+    @Column(unique=true)
     private String pseudo;
     @NotNull
     private String email;
@@ -47,6 +48,9 @@ public class Player implements Serializable {
     private String mdp;
     @NotNull
     private boolean connected = false;
+    
+    private int points;
+    private EnumState etat;
 
     public String getPseudo() {
         return pseudo;
@@ -85,12 +89,22 @@ public class Player implements Serializable {
         this.pseudo = "pseudo";
         this.email = "email";
         this.mdp = "mdp";
+        points = 0;
+        etat = EnumState.ATTENTE;
     }
 
     public Player(String pseudo, String email, String mdp) {
         this.pseudo = pseudo;
         this.email = email;
         this.mdp = mdp;
+    }
+    
+    public Player(String pseudo, String email, String mdp, EnumState etat, int po){
+        this.pseudo = pseudo;
+        this.email = email;
+        this.mdp = mdp;
+        this.points = po;
+        this.etat = etat;
     }
     
     public int getScore() {
@@ -124,5 +138,33 @@ public class Player implements Serializable {
     @Override
     public String toString() {
         return "enterprise.belli_gorrieri_lestel_shifumi_ejb.persistence.Player1[ id=" + id + " ]";
+    }
+    
+        /**
+     * Nombre de point à ajouter au score
+     * Avec verification pour ne par aller en dessous de zero
+     * @param nbToAdd 
+     */
+    public void addScore(int nbToAdd){
+        if((points + nbToAdd) < 0)
+            points = 0;
+        
+        points += nbToAdd;
+    }
+    
+    /**
+     * Modification du score
+     * @param score 
+     */
+    public void setScore(int score){
+        points = score;
+    }   
+    
+    /**
+     * Modification de l'etat du joueur
+     * @param etat 
+     */
+    public void setEtat(EnumState etat){
+        this.etat = etat;
     }
 }

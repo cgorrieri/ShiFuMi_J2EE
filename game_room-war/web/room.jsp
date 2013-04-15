@@ -1,11 +1,14 @@
+<%@page import="java.io.Console"%>
 <%@page import="java.util.List"%>
 <%@page import="enterprise.game_room_ejb.ejb.session.PlayerSessionBeanLocal"%>
 <%@page import="enterprise.game_room_ejb.persistence.Player"%>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
     <head>
         <link href="styletab.css" rel="stylesheet" type="text/css" />
-        <meta http-equiv="Content-type" content="text/html; charset=UTF-8"/> 
+        <link href="css/jeux.css" rel="stylesheet" type="text/css" />
+        <meta http-equiv="Content-type" content="text/html; charset=UTF-8"/>
         <script type="text/javascript">
             function activdesactiv(){ 
                 var t,arg=activdesactiv.arguments; 
@@ -26,8 +29,6 @@
                 </div> -->
             </div>
         </div>
-        
-        <a href="index.jsp?deconnexion=true">Déconnexion</a>
 
         <div class="gauche">
             <h2><center>Liste des concurrents</center></h2>
@@ -45,21 +46,38 @@
                         <%
                             if (session.getAttribute("PSB") != null) {
                                 PlayerSessionBeanLocal psb = (PlayerSessionBeanLocal) session.getAttribute("PSB");
+                                %>
+                                <div class="carre_connexion">
+                                    Bonjour <%out.print(psb.getPlayer().getPseudo());%> <br>
+                                    <% out.print(psb.getPlayer().getScore()); %> points <br>
+                                    <a href="index.jsp?deconnexion=true">Déconnexion</a>
+                                </div>
+                                <%
                                 List players = psb.getConnectedPlayers();
                                 for (int i = 0; i < players.size(); i++) {
                                     Player p = (Player) players.get(i);
                         %>
+                        
                         <tr onclick="activdesactiv('<% out.print(p.getPseudo());%>');" >
                             <td><input id="<% out.print(p.getPseudo());%>" type="radio" name="id" value="<% out.print(p.getId());%>"/></td>
                             <td><% out.print(p.getPseudo());%></td>
                             <td><% out.print(p.getScore());%></td>
                             <td><% out.print(p.getEtat());%></td>
                         </tr>
+                        
                         <%
                             }
                         } else {
                         %>
-                        <p>Vous n'etes pas idetifié...</p>
+                        <div class="header">
+                            <div class="message">
+                                <div class="erreur">
+                                    Vous n'étes pas identifié...
+                                    Redirection vers la connexion...
+                                    <a href="index.jsp"> RETOUR </a>
+                                </div>
+                            </div>
+                        </div>
                         <script type="text/javascript">
                             window.location.href="index.jsp";
                         </script>
@@ -102,4 +120,3 @@
         </div>
     </body>
 </html>
-
