@@ -16,6 +16,8 @@ import javax.jms.TextMessage;
 
 /**
  *
+ * Cette classe permet de traiter les MDB des clients qui demandent des defies
+ * Elle traite la queue jms/Queue
  * @author user
  */
 @MessageDriven(mappedName = "jms/Queue", activationConfig = {
@@ -23,13 +25,13 @@ import javax.jms.TextMessage;
     @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue")
 })
 
-public class DefierPlayer implements MessageListener {
+public class DefierPlayerMDB implements MessageListener {
     static final Logger logger = Logger.getLogger("SimpleMessageBean");
    
     @Resource
     private MessageDrivenContext mdc;
     
-    public DefierPlayer() {
+    public DefierPlayerMDB() {
     }
     
     @Override

@@ -10,9 +10,9 @@
 }
 
 .plateau {
+	padding-top:2%;
 	width: 100%;
-	height: 30%;
-	margin-top: 10px;
+	height: 25%;
 	background-image: url(../images/bois.jpg);
     background-repeat: repeat;
     border-radius: 17px;
@@ -21,6 +21,7 @@
 .joueurbas {
 	width: 100%;
 	margin-top: 10px;
+	padding:2%;
 }
 
 .joueurhaut .ima{
@@ -32,8 +33,6 @@
 }
 
 .joueurbas .ima{
-	margin-right: 10%;
-	margin-left: 10%;
 	border: 5px solid black;
 	border-radius: 17px;
 }

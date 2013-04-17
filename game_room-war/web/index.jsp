@@ -1,7 +1,21 @@
-ï»¿<%@page import="enterprise.game_room_ejb.common.PlayerNotFoundException"%>
+<%@page import="enterprise.game_room_ejb.common.PlayerNotFoundException"%>
+<%@page import="javax.jms.QueueSender"%>
+<%@page import="javax.jms.TextMessage"%>
+<%@page import="javax.jms.QueueConnection"%>
+<%@page import="java.sql.Connection"%>
+<%@page import="javax.jms.QueueSession"%>
+<%@page import="javax.jms.QueueConnectionFactory"%>
+<%@page import="javax.jms.Queue"%>
+<%@page import="javax.naming.InitialContext"%>
+<%@page import="javax.jms.JMSException"%>
+<%@page import="enterprise.game_room_ejb.mdb.defiesClientsMDB"%>
+<%@page import="enterprise.game_room_ejb.mdb.DefierPlayer"%>
+<%@page import="javax.annotation.Resource"%>
+<%@page import="java.io.Console"%>
+<%@page import="java.util.List"%>
 <%@page import="enterprise.game_room_ejb.ejb.session.PlayerSessionBeanLocal"%>
 <%@page import="enterprise.game_room_ejb.persistence.Player"%>
-<%@page import="javax.naming.InitialContext"%>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
     <head>
@@ -57,7 +71,7 @@
 
                                 playerSession.connexion(pseudo, mdp);
                                 %>
-                                <div class="ok">Connexion rÃ©ussie.<br/>
+                                <div class="ok">Connexion réussie.<br/>
                                     Redirection vers la salle de jeux...
                                 </div>
                                 <script type="text/javascript">
@@ -65,6 +79,20 @@
                                 </script>
                                 <%
                                 session.setAttribute("PSB", playerSession);
+                                
+                                
+                                // Envoi d'un message driven bean pour informer de la connexion
+                                //
+                                InitialContext ctx = new InitialContext();
+                                Queue queue = (Queue) ctx.lookup("jms/QueueConnexions");
+                                QueueConnectionFactory factory = (QueueConnectionFactory) ctx.lookup("jms/ConnectionFactory");
+                                QueueConnection connection = factory.createQueueConnection();
+                                QueueSession queueSession = connection.createQueueSession(false, QueueSession.AUTO_ACKNOWLEDGE);
+                                TextMessage textMessage = queueSession.createTextMessage("Connection of : " + playerSession.getPlayer().getId());
+                                QueueSender queueSender = queueSession.createSender(queue);
+                                queueSender.send(textMessage); 
+                              
+                                    
                             } catch (PlayerNotFoundException e) {
                                 %>
                                  <div class="erreur" id="ima">Identifiant ou mot de passe invalide</div>
@@ -80,8 +108,7 @@
                          psb.deconnexion();
                          session.removeAttribute("PSB");
                          %>
-                                <div class="ok">Connexion rï¿½ussie.<br/>
-                                    Vous avez bien Ã©tÃ© dÃ©connectÃ©. A bientÃ´t !
+                                <div class="ok">Vous avez bien été déconnecté. A bientôt !
                                 </div>
                          <%
                      }
