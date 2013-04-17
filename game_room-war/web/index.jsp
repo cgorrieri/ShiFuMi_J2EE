@@ -8,8 +8,6 @@
 <%@page import="javax.jms.Queue"%>
 <%@page import="javax.naming.InitialContext"%>
 <%@page import="javax.jms.JMSException"%>
-<%@page import="enterprise.game_room_ejb.mdb.defiesClientsMDB"%>
-<%@page import="enterprise.game_room_ejb.mdb.DefierPlayer"%>
 <%@page import="javax.annotation.Resource"%>
 <%@page import="java.io.Console"%>
 <%@page import="java.util.List"%>

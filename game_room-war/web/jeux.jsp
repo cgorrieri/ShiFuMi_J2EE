@@ -1,6 +1,6 @@
 <html>
 <head>
-	<link href="styletab.css" rel="stylesheet" type="text/css" />
+	<link href="css/styletab.css" rel="stylesheet" type="text/css" />
 	<link href="css/jeux.css" rel="stylesheet" type="text/css" />
 	<meta http-equiv="Content-type" content="text/html; charset=UTF-8"/> 
 </head>
@@ -27,7 +27,6 @@
 		<div class="plateau">
 		<center>
 			<img class="ima" src="images/pierre.png">
-			<img class="ima" src="images/inconnu.png">
 		</center>
 		</div>
 
