@@ -1,20 +1,11 @@
-
-<%@page import="javax.jms.QueueSender"%>
-<%@page import="javax.jms.TextMessage"%>
-<%@page import="javax.jms.QueueConnection"%>
 <%@page import="java.sql.Connection"%>
-<%@page import="javax.jms.QueueSession"%>
-<%@page import="javax.jms.QueueConnectionFactory"%>
-<%@page import="javax.jms.Queue"%>
-<%@page import="javax.naming.InitialContext"%>
 <%@page import="javax.jms.JMSException"%>
-<%@page import="enterprise.game_room_ejb.mdb.defiesClientsMDB"%>
-<%@page import="enterprise.game_room_ejb.mdb.DefierPlayer"%>
 <%@page import="javax.annotation.Resource"%>
 <%@page import="java.io.Console"%>
 <%@page import="java.util.List"%>
 <%@page import="enterprise.game_room_ejb.ejb.session.PlayerSessionBeanLocal"%>
 <%@page import="enterprise.game_room_ejb.persistence.Player"%>
+<%@page import="helpers.Helpers"%>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -32,6 +23,39 @@
                     document.getElementById(t).checked=false; 
                 } 
             } 
+            var requete;
+            
+            // Méthode qui va appeler en ajax le servlet qui va récupérer les joueurs connectés.
+            function getPlayers() {
+                var url = "get_players";
+                if (window.XMLHttpRequest) {
+                    requete = new XMLHttpRequest();
+                    requete.open("GET", url, true);
+                    // La méthodes majPlayers sera appeler à la réponse de la requète
+                    requete.onreadystatechange = majPlayers;
+                    requete.send(null);
+                } else if (window.ActiveXObject) {
+                    requete = new ActiveXObject("Microsoft.XMLHTTP");
+                    if (requete) {
+                        requete.open("GET", url, true);
+                        requete.onreadystatechange = majPlayers;
+                        requete.send();  
+                    }
+                } else {
+                    alert("Le navigateur ne supporte pas la technologie Ajax");
+                }
+            }
+            // Va mettre dans le corps des joueurs, les jours connectés
+            function majPlayers() {
+                if (requete.readyState == 4) {
+                    if (requete.status == 200) {
+                        document.getElementById("players_body").innerHTML = requete.responseText;
+                    } else {
+                        alert('Une erreur est survenue lors de la mise à jour de la page.'+
+                            '\n\nCode retour = '+requete.statusText);    
+                    }
+                }
+            }
         </script>
     </head>
     <body><h1> SI-FU-MI </h1>
@@ -42,7 +66,19 @@
                 </div> -->
             </div>
         </div>
-
+        <%
+            if (session.getAttribute("PSB") != null) {
+                PlayerSessionBeanLocal psb = (PlayerSessionBeanLocal) session.getAttribute("PSB");
+        %>
+        <div class="carre_connexion">
+            Bonjour <%out.print(psb.getPlayer().getPseudo() + " (" + psb.getPlayer().getId() + ")");%> <br/>
+            <% out.print(psb.getPlayer().getScore());%> points <br/>
+            <a href="index.jsp?deconnexion=true">Déconnexion</a>
+        </div>
+            <script type="text/javascript">
+                // Rafraichi la liste des joueurs
+                var x = setInterval(getPlayers, 3000);
+            </script>
         <div class="gauche">
             <h2><center>Liste des concurrents</center></h2>
             <form action="" method="GET">
@@ -55,47 +91,11 @@
                             <th scope="col" class="rounded-q2">Etat</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="players_body">
                         <%
-                            if (session.getAttribute("PSB") != null) {
-                                PlayerSessionBeanLocal psb = (PlayerSessionBeanLocal) session.getAttribute("PSB");
-                                %>
-                                <div class="carre_connexion">
-                                    Bonjour <%out.print(psb.getPlayer().getPseudo() + " (" + psb.getPlayer().getId() + ")");%> <br/>
-                                    <% out.print(psb.getPlayer().getScore()); %> points <br/>
-                                    <a href="index.jsp?deconnexion=true">Déconnexion</a>
-                                </div>
-                                    
-                                <%
-                                // Envoi des MDB
-                                if(request.getParameter("type") != null)
-                                if(request.getParameter("type").equals("defier")){
-                                    String id = request.getParameter("id");
-                                    InitialContext ctx = new InitialContext();
-                                    Queue queue = (Queue) ctx.lookup("jms/Queue");
-                                    QueueConnectionFactory factory = (QueueConnectionFactory) ctx.lookup("jms/ConnectionFactory");
-                                    QueueConnection connection = factory.createQueueConnection();
-                                    QueueSession queueSession = connection.createQueueSession(false, QueueSession.AUTO_ACKNOWLEDGE);
-                                    TextMessage textMessage = queueSession.createTextMessage("defie : " + psb.getPlayer().getId() + " vs " + id );
-                                    QueueSender queueSender = queueSession.createSender(queue);
-                                    queueSender.send(textMessage);                                          
-                                }
-
-                                // Lister tous les participants
-                                List players = psb.getConnectedPlayers();
-                                for (int i = 0; i < players.size(); i++) {
-                                    Player p = (Player) players.get(i);
-                          %>
-                        
-                        <tr onclick="activdesactiv('<% out.print(p.getPseudo());%>');" >
-                            <td><input id="<% out.print(p.getPseudo());%>" type="radio" name="id" value="<% out.print(p.getId());%>"/></td>
-                            <td><% out.print(p.getPseudo());%></td>
-                            <td><% out.print(p.getScore());%></td>
-                            <td><% out.print(p.getEtat());%></td>
-                        </tr>
-                        
-                        <%
-                            }
+                            // Lister tous les participants
+                            List players = psb.getConnectedPlayers();
+                            out.print(Helpers.playersListToHTML(players));
                         } else {
                         %>
                         <div class="header">
@@ -118,7 +118,7 @@
                 <center>
                     <input type="hidden" name="type" value="defier"/>
                     <input class="button" type="submit" value="Défier !"/>
-                    <input class="button" type="button" value="Observer !"/>
+                    <input class="button" type="button" value="Observer !" />
                 </center>
             </form>
         </div>

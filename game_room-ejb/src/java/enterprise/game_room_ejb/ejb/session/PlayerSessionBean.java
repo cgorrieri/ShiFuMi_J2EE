@@ -5,11 +5,27 @@
 package enterprise.game_room_ejb.ejb.session;
 
 import enterprise.game_room_ejb.common.PlayerNotFoundException;
+import enterprise.game_room_ejb.mdb.Connexion;
+import enterprise.game_room_ejb.mdb.Deconnexion;
+import enterprise.game_room_ejb.mdb.Update;
 import enterprise.game_room_ejb.persistence.Player;
+import java.util.ArrayList;
 import java.util.List;
-import javax.ejb.CreateException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.annotation.Resource;
 import javax.ejb.Remove;
 import javax.ejb.Stateful;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageConsumer;
+import javax.jms.ObjectMessage;
+import javax.jms.Session;
+import javax.jms.Topic;
+import javax.jms.TopicConnection;
+import javax.jms.TopicConnectionFactory;
+import javax.jms.TopicPublisher;
+import javax.jms.TopicSession;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -19,6 +35,18 @@ import javax.persistence.PersistenceContext;
  */
 @Stateful
 public class PlayerSessionBean implements PlayerSessionBeanLocal {
+    
+    @Resource(mappedName = "jms/ConnexionTopicCF")
+    private TopicConnectionFactory topicConnectionFactory;
+    
+    @Resource(mappedName = "jms/ConnexionTopic")
+    private Topic topic;
+    
+    TopicConnection topicConnection;
+    TopicSession topicSession;
+    TopicPublisher topicPublisher;
+    String subName;
+    MessageConsumer topicSubscriber;
 
     @PersistenceContext(unitName = "persistence_sample")
     private EntityManager em;
@@ -54,7 +82,7 @@ public class PlayerSessionBean implements PlayerSessionBeanLocal {
                 .setParameter("pseudo", pseudo)
                 .setParameter("mdp", mdp)
                 .getResultList();
-        if (l.size() == 0) {
+        if (l.isEmpty()) {
             throw new PlayerNotFoundException();
         }
         return (Player) l.get(0);
@@ -66,20 +94,67 @@ public class PlayerSessionBean implements PlayerSessionBeanLocal {
                 .setParameter("pseudo", pseudo)
                 .setParameter("mdp", mdp)
                 .getResultList();
-        if (l.size() == 0) {
+        if (l.isEmpty()) {
             throw new PlayerNotFoundException();
         }
         player = (Player) l.get(0);
         player.setConnected(true);
         persist(player);
+        
+//        try {
+//            // Init de la connexion avec le topic
+//            topicConnection = topicConnectionFactory.createTopicConnection();
+//            topicSession = topicConnection.createTopicSession(false, Session.AUTO_ACKNOWLEDGE);
+//            // Publish
+//            topicPublisher = topicSession.createPublisher(topic);
+//            // création et envoi du message
+//            ObjectMessage message = topicSession.createObjectMessage(new Connexion(player.getId(),player.getPseudo(),player.getScore()));
+//            topicPublisher.publish(message);
+//            // fermeture car on ne plishera plus rien jusqu'a la fermeture de la session
+//            topicPublisher.close();
+//            // Subscribe
+//            topicSubscriber = topicSession.createDurableSubscriber(topic, subName);
+//        } catch (JMSException e) {
+//            System.out.println("Exception occurred: " + e.toString());
+//        }
     }
+    
+//    public List<Update> getUpdates() {
+//        
+//            List<Update> res = new ArrayList<Update>();
+//            Message m;
+//        try {
+//            while((m = topicSubscriber.receive(100)) != null) {
+//                res.add((Update)((ObjectMessage)m).getObject());
+//            }
+//            return res;
+//        } catch (JMSException ex) {
+//            Logger.getLogger(PlayerSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+//            return null;
+//        }
+//    }
     
     @Override
     @Remove
     public void deconnexion() {
+        // Enregistrement en BDD que le player est déconnecter
         player.setConnected(false);
         em.merge(player);
+        // Suppression du player de bean
         player = null;
+//        try {
+//            // Publish
+//            topicPublisher = topicSession.createPublisher(topic);
+//            // création et envoi du message
+//            ObjectMessage message = topicSession.createObjectMessage(new Deconnexion(player.getId()));
+//            topicPublisher.publish(message);
+//            // fermeture de toutes les connexions
+//            topicPublisher.close();
+//            topicSubscriber.close();
+//            topicConnection.close();
+//        } catch (JMSException ex) {
+//            Logger.getLogger(PlayerSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+//        }
     }
 
     @Override
@@ -97,12 +172,8 @@ public class PlayerSessionBean implements PlayerSessionBeanLocal {
         em.persist(o);
     }
 
-    public void ejbCreate() throws CreateException {   // when bean is created
-    }
-
-    public void ejbActivate() {    // when bean is activated
-    }
-
-    public void ejbPassivate() {    // when bean is deactivated
+    @Override
+    public List<Update> getUpdates() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

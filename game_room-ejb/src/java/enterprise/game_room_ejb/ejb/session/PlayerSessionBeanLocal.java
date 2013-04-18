@@ -5,6 +5,7 @@
 package enterprise.game_room_ejb.ejb.session;
 
 import enterprise.game_room_ejb.common.PlayerNotFoundException;
+import enterprise.game_room_ejb.mdb.Update;
 import enterprise.game_room_ejb.persistence.Player;
 import java.util.List;
 import javax.ejb.Local;
@@ -32,4 +33,6 @@ public interface PlayerSessionBeanLocal {
     void accepterDefi(String pseudo);
     
     Player getPlayer();
+
+    public List<Update> getUpdates();
 }

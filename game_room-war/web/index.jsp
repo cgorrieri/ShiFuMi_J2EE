@@ -76,21 +76,7 @@
                                     window.location.href="room.jsp";
                                 </script>
                                 <%
-                                session.setAttribute("PSB", playerSession);
-                                
-                                
-                                // Envoi d'un message driven bean pour informer de la connexion
-                                //
-                                InitialContext ctx = new InitialContext();
-                                Queue queue = (Queue) ctx.lookup("jms/QueueConnexions");
-                                QueueConnectionFactory factory = (QueueConnectionFactory) ctx.lookup("jms/ConnectionFactory");
-                                QueueConnection connection = factory.createQueueConnection();
-                                QueueSession queueSession = connection.createQueueSession(false, QueueSession.AUTO_ACKNOWLEDGE);
-                                TextMessage textMessage = queueSession.createTextMessage("Connection of : " + playerSession.getPlayer().getId());
-                                QueueSender queueSender = queueSession.createSender(queue);
-                                queueSender.send(textMessage); 
-                              
-                                    
+                                session.setAttribute("PSB", playerSession);                                   
                             } catch (PlayerNotFoundException e) {
                                 %>
                                  <div class="erreur" id="ima">Identifiant ou mot de passe invalide</div>
@@ -114,7 +100,7 @@
                 </div>
     
                 <div class="content">
-                    <input name="username" type="text" required="required" pattern="[A-Za-Z0-9_-]{3,15}" class="input username" placeholder="Pseudo" />
+                    <input name="username" type="text" required="required" pattern="[A-Za-z0-9_-]{3,15}" class="input username" placeholder="Pseudo" />
                     <input name="password" type="password" required="required" class="input password" placeholder="Mot de passe" />
                 </div>
 
