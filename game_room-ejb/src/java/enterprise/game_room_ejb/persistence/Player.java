@@ -6,14 +6,18 @@ package enterprise.game_room_ejb.persistence;
 
 import enterprise.game_room_ejb.common.EnumState;
 import java.io.Serializable;
-import javax.persistence.Basic;
+import java.util.LinkedList;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -29,17 +33,11 @@ import javax.validation.constraints.NotNull;
 )
 public class Player implements Serializable {
     private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name ="player_id", nullable =false)
     private Long id;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
     @Column(unique=true)
     private String pseudo;
     @NotNull
@@ -49,9 +47,23 @@ public class Player implements Serializable {
     @NotNull
     private boolean connected = false;
     
+    // Relation avec le champ privé "defie" de Defi
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "defie")
+    private List<Defi> defiesRecu;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "defiant")
+    private List<Defi> defiesLance;
+    
     private int points;
     private EnumState etat;
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+    
     public String getPseudo() {
         return pseudo;
     }
@@ -115,6 +127,24 @@ public class Player implements Serializable {
         return "En Attente";
     }
 
+    public List<Defi> getDefiesRecu() {
+        return defiesRecu;
+    }
+
+    public void setDefiesRecu(List<Defi> defiesRecu) {
+        this.defiesRecu = defiesRecu;
+    }
+
+    public List<Defi> getDefiesLance() {
+        return defiesLance;
+    }
+
+    public void setDefiesLance(List<Defi> defiesLance) {
+        this.defiesLance = defiesLance;
+    }
+    
+    
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -146,9 +176,9 @@ public class Player implements Serializable {
      * @param nbToAdd 
      */
     public void addScore(int nbToAdd){
-        if((points + nbToAdd) < 0)
+        if((points + nbToAdd) < 0) {
             points = 0;
-        
+        }
         points += nbToAdd;
     }
     
@@ -167,4 +197,19 @@ public class Player implements Serializable {
     public void setEtat(EnumState etat){
         this.etat = etat;
     }
+
+//    /**
+//     * Récupère tous les défies lancé
+//     * @return 
+//     */
+//    @Transient
+//    //since the signature starts with a get, need to annotate it as @Transient
+//    public ArrayList getDefiesRecu() {
+//        ArrayList list = new ArrayList();
+//        Iterator c = defiRecu.iterator();
+//        while (c.hasNext()) {
+//            list.add((Player)c.next());
+//        }
+//        return list;
+//    }
 }

@@ -28,11 +28,11 @@ public interface PlayerSessionBeanLocal {
     
     void deconnexion();
     
-    void defier(String pseudo);
+    void defier(int id);
     
     void accepterDefi(String pseudo);
     
     Player getPlayer();
 
-    public List<Update> getUpdates();
+    List getDefies();
 }

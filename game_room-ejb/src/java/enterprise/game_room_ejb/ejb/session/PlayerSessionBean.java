@@ -158,8 +158,13 @@ public class PlayerSessionBean implements PlayerSessionBeanLocal {
     }
 
     @Override
-    public void defier(String pseudo) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public List getDefies() {
+        return player.getDefiesRecu();
+    }
+    
+    @Override
+    public void defier(int id) {
+         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -170,10 +175,5 @@ public class PlayerSessionBean implements PlayerSessionBeanLocal {
     @Override
     public void persist(Object o) {
         em.persist(o);
-    }
-
-    @Override
-    public List<Update> getUpdates() {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 }
