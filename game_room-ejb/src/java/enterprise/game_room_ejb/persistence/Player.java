@@ -8,13 +8,13 @@ import enterprise.game_room_ejb.common.EnumState;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -48,9 +48,9 @@ public class Player implements Serializable {
     private boolean connected = false;
     
     // Relation avec le champ privé "defie" de Defi
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "defie")
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy = "defie")
     private List<Defi> defiesRecu;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "defiant")
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER, mappedBy = "defiant")
     private List<Defi> defiesLance;
     
     private int points;
@@ -142,8 +142,6 @@ public class Player implements Serializable {
     public void setDefiesLance(List<Defi> defiesLance) {
         this.defiesLance = defiesLance;
     }
-    
-    
 
     @Override
     public int hashCode() {

@@ -5,22 +5,16 @@
 package enterprise.game_room_ejb.ejb.session;
 
 import enterprise.game_room_ejb.common.PlayerNotFoundException;
-import enterprise.game_room_ejb.mdb.Connexion;
-import enterprise.game_room_ejb.mdb.Deconnexion;
-import enterprise.game_room_ejb.mdb.Update;
+import enterprise.game_room_ejb.persistence.Defi;
 import enterprise.game_room_ejb.persistence.Player;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.Remove;
 import javax.ejb.Stateful;
-import javax.jms.JMSException;
-import javax.jms.Message;
 import javax.jms.MessageConsumer;
-import javax.jms.ObjectMessage;
-import javax.jms.Session;
 import javax.jms.Topic;
 import javax.jms.TopicConnection;
 import javax.jms.TopicConnectionFactory;
@@ -159,12 +153,20 @@ public class PlayerSessionBean implements PlayerSessionBeanLocal {
 
     @Override
     public List getDefies() {
-        return player.getDefiesRecu();
+        List players = new ArrayList();
+        Iterator<Defi> i = player.getDefiesRecu().iterator();
+        while(i.hasNext()) {
+            players.add(i.next().getDefiant());
+        }
+        return players;
     }
     
     @Override
-    public void defier(int id) {
-         throw new UnsupportedOperationException("Not supported yet.");
+    public void defier(Long id) {
+        // récuperer defied player
+        Player defie = (Player)em.find(Player.class, id);
+        Defi d = new Defi(player, defie, new Date());
+        persist(d);
     }
 
     @Override

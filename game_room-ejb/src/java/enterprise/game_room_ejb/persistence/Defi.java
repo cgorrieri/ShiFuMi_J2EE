@@ -8,9 +8,13 @@ import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -23,6 +27,7 @@ import javax.persistence.TemporalType;
 @Table(name = "defis")
 public class Defi implements Serializable {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     
     @ManyToOne
@@ -36,6 +41,15 @@ public class Defi implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "CREATED_AT")
     private java.util.Date createdAt;
+
+    public Defi() {
+    }
+
+    public Defi(Player defiant, Player defie, Date createdAt) {
+        this.defiant = defiant;
+        this.defie = defie;
+        this.createdAt = createdAt;
+    }
     
     public Long getId() {
         return id;

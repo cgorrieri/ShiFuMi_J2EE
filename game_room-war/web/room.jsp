@@ -15,8 +15,8 @@
         <meta http-equiv="Content-type" content="text/html; charset=UTF-8"/>
         <script type="text/javascript">
             function activdesactiv(){ 
-                var t,arg=activdesactiv.arguments; 
-                t=arg[0]; 
+                var arg=activdesactiv.arguments; 
+                var t=arg[0]; 
                 if (document.getElementById(t).checked==false){ 
                     document.getElementById(t).checked=true; 
                 } else { 
@@ -24,6 +24,27 @@
                 } 
             } 
             var requete;
+            
+            // Méthode qui va appeler en ajax le servlet qui va récupérer les joueurs connectés.
+            function defier(id) {
+                var url = "defier?id="+id;
+                if (window.XMLHttpRequest) {
+                    requete = new XMLHttpRequest();
+                    requete.open("GET", url, true);
+                    // La méthodes majPlayers sera appeler à la réponse de la requète
+                    requete.onreadystatechange = function() {alert("OK")};
+                    requete.send(null);
+                } else if (window.ActiveXObject) {
+                    requete = new ActiveXObject("Microsoft.XMLHTTP");
+                    if (requete) {
+                        requete.open("GET", url, true);
+                        requete.onreadystatechange = function() {alert("OK")};
+                        requete.send();  
+                    }
+                } else {
+                    alert("Le navigateur ne supporte pas la technologie Ajax");
+                }
+            }
             
             // Méthode qui va appeler en ajax le servlet qui va récupérer les joueurs connectés.
             function getPlayers() {
@@ -75,77 +96,67 @@
             <% out.print(psb.getPlayer().getScore());%> points <br/>
             <a href="index.jsp?deconnexion=true">Déconnexion</a>
         </div>
-            <script type="text/javascript">
-                // Rafraichi la liste des joueurs
-                var x = setInterval(getPlayers, 3000);
-            </script>
+        <script type="text/javascript">
+            // Rafraichi la liste des joueurs
+            var x = setInterval(getPlayers, 3000);
+        </script>
         <div class="gauche">
             <h2><center>Liste des concurrents</center></h2>
-            <form action="" method="GET">
-                <table id="rounded-corner" class="tabtous">
-                    <thead>
-                        <tr>
-                            <th scope="col" class="rounded-company"></th>
-                            <th scope="col" class="rounded-company">Pseudo</th>
-                            <th scope="col" class="rounded-q1">Points</th>
-                            <th scope="col" class="rounded-q2">Etat</th>
-                        </tr>
-                    </thead>
-                    <tbody id="players_body">
-                        <%
-                            // Lister tous les participants
-                            List players = psb.getConnectedPlayers();
-                            out.print(Helpers.playersListToHTML(players));
-                        } else {
-                        %>
-                        <div class="header">
-                            <div class="message">
-                                <div class="erreur">
-                                    Vous n'étes pas identifié...
-                                    Redirection vers la connexion...
-                                    <a href="index.jsp"> RETOUR </a>
-                                </div>
-                            </div>
-                        </div>
-                        <script type="text/javascript">
-                            window.location.href="index.jsp";
-                        </script>
-                        <%                            }
-                        %>
-                    </tbody>
-                </table>
 
-                <center>
-                    <input type="hidden" name="type" value="defier"/>
-                    <input class="button" type="submit" value="Défier !"/>
-                    <input class="button" type="button" value="Observer !" />
-                </center>
-            </form>
+            <table id="rounded-corner" class="tabtous">
+                <thead>
+                    <tr>
+                        <th scope="col" class="rounded-company">Pseudo</th>
+                        <th scope="col" class="rounded-q1">Points</th>
+                        <th scope="col" class="rounded-q2">Etat</th>
+                        <th scope="col" class="rounded-q2">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="players_body">
+                    <%
+                        // Lister tous les participants
+                        List players = psb.getConnectedPlayers();
+                        out.print(Helpers.playersListToHTML(players));
+                    %>
+                </tbody>
+            </table>
         </div>
         <div class="droite">
             <h2><center>Liste des défis</center></h2>
-            <form action="" method="GET">
-                <table id="rounded-corner" class="tabdefie">
-                    <thead>
-                        <tr >
-                            <th scope="col" class="rounded-company"></th>
-                            <th scope="col" class="rounded-company">Pseudo</th>
-                            <th scope="col" class="rounded-q1">Points</th>
-                            <th scope="col" class="rounded-q2">Cadence</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr onclick="activdesactiv('lala');">
-                            <td><input id="lala" type="radio" name="pseudo" value="3465" /></td>
-                            <td>3465</td>
-                            <td>1702</td>
-                            <td>Souvent</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <input type="hidden" name="type" value="accepter" />
-                <center><input class="button" type="submit" value="Accepter !" /></center>
-            </form>
+            <table id="rounded-corner" class="tabdefie">
+                <thead>
+                    <tr >
+                        <th scope="col" class="rounded-company">Pseudo</th>
+                        <th scope="col" class="rounded-q1">Points</th>
+                        <th scope="col" class="rounded-q2">Etat</th>
+                        <th scope="col" class="rounded-q2">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <%
+                        // Lister tous les participants
+                        List defiant = psb.getDefies();
+                        out.print(Helpers.playersListToHTML(defiant));
+                    %>
+                </tbody>
+            </table>
         </div>
+        <%
+        } else {
+        %>
+        <div class="header">
+            <div class="message">
+                <div class="erreur">
+                    Vous n'étes pas identifié...
+                    Redirection vers la connexion...
+                    <a href="index.jsp"> RETOUR </a>
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript">
+            window.location.href="index.jsp";
+        </script>
+        <%                            }
+        %>
     </body>
 </html>

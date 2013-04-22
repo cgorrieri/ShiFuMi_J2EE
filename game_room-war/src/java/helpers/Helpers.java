@@ -22,11 +22,11 @@ public class Helpers {
         String resultat = "";
         for (int i = 0; i < players.size(); i++) {
             Player p = (Player) players.get(i);
-            resultat += "<tr onclick=\"activdesactiv('<% out.print(p.getPseudo());%>');\" >"
-                    + "<td><input id=" + p.getPseudo() + " type=\"radio\" name=\"id\" value=" + p.getId() + "/></td>"
+            resultat += "<tr>"
                     + "<td>" + p.getPseudo() + "</td>"
                     + "<td>" + p.getScore() + "</td>"
                     + "<td>" + p.getEtat() + "</td>"
+                    + "<td><a onclick='defier(" + p.getId() + ");'>défier</a></td>"
                     + "</tr>";
         }
         return resultat;
