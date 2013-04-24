@@ -1,11 +1,77 @@
-<%@page import="java.sql.Connection"%>
+<%@page import="javax.jms.ObjectMessage"%>
+<%@page import="javax.jms.Connection"%>
+<%@page import="javax.jms.Session"%>
+<%@page import="javax.jms.ConnectionFactory"%>
+<%@page import="javax.ejb.Init"%>
+<%@page import="javax.naming.InitialContext"%>
+<%@page import="enterprise.game_room_ejb.mdb.Update"%>
+<%@page import="javax.jms.MessageConsumer"%>
+<%@page import="javax.jms.TopicConnection"%>
+<%@page import="javax.jms.Topic"%>
 <%@page import="javax.jms.JMSException"%>
 <%@page import="javax.annotation.Resource"%>
 <%@page import="java.io.Console"%>
 <%@page import="java.util.List"%>
 <%@page import="enterprise.game_room_ejb.ejb.session.PlayerSessionBeanLocal"%>
 <%@page import="enterprise.game_room_ejb.persistence.Player"%>
-<%@page import="helpers.Helpers"%>
+
+<%! // Fera partie de la classe rendu du jsp
+    
+    // Champ privé de la classe
+    Boolean firstTime;
+    //@Resource(mappedName = "jms/ConnexionTopicCF")
+    ConnectionFactory connectionFactory;
+    //@Resource(mappedName = "jms/ConnexionTopic")
+    Topic topic;
+    Connection connection = null;
+    Session jmsSession = null;
+    MessageConsumer subscriber = null;
+    ObjectMessage message = null;
+
+    // methode d'init override
+    public void jspInit() {
+        System.out.println("jspInit");
+        try {
+            InitialContext ic = new InitialContext();
+            connectionFactory = (ConnectionFactory) ic.lookup("jms/ConnectionFactory");
+            topic = (Topic) ic.lookup("jms/ConnexionTopic");
+
+            connection = connectionFactory.createConnection();
+            jmsSession = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            subscriber = jmsSession.createConsumer(topic);
+            
+            connection.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+    // methode de destroy override
+    public void jspDestroy() {
+        try {
+           connection.stop();
+           subscriber.close();
+           jmsSession.close();
+           connection.close();
+        } catch (Exception ex) {
+           ex.printStackTrace();
+        }
+    }
+    
+    public String playersListToHTML(List players) {
+        String resultat = "";
+        for (int i = 0; i < players.size(); i++) {
+            Player p = (Player) players.get(i);
+            resultat += "<tr>"
+                    + "<td>" + p.getPseudo() + "</td>"
+                    + "<td>" + p.getScore() + "</td>"
+                    + "<td>" + p.getEtat() + "</td>"
+                    + "<td><a onclick='defier(" + p.getId() + ");'>défier</a></td>"
+                    + "</tr>";
+        }
+        return resultat;
+    }
+%>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -22,66 +88,48 @@
                 } else { 
                     document.getElementById(t).checked=false; 
                 } 
-            } 
-            var requete;
-            
-            // Méthode qui va appeler en ajax le servlet qui va récupérer les joueurs connectés.
-            function defier(id) {
-                var url = "defier?id="+id;
-                if (window.XMLHttpRequest) {
-                    requete = new XMLHttpRequest();
-                    requete.open("GET", url, true);
-                    // La méthodes majPlayers sera appeler à la réponse de la requète
-                    requete.onreadystatechange = function() {alert("OK")};
-                    requete.send(null);
-                } else if (window.ActiveXObject) {
-                    requete = new ActiveXObject("Microsoft.XMLHTTP");
-                    if (requete) {
-                        requete.open("GET", url, true);
-                        requete.onreadystatechange = function() {alert("OK")};
-                        requete.send();  
-                    }
-                } else {
-                    alert("Le navigateur ne supporte pas la technologie Ajax");
-                }
-            }
-            
-            // Méthode qui va appeler en ajax le servlet qui va récupérer les joueurs connectés.
-            function getPlayers() {
-                var url = "get_players";
-                if (window.XMLHttpRequest) {
-                    requete = new XMLHttpRequest();
-                    requete.open("GET", url, true);
-                    // La méthodes majPlayers sera appeler à la réponse de la requète
-                    requete.onreadystatechange = majPlayers;
-                    requete.send(null);
-                } else if (window.ActiveXObject) {
-                    requete = new ActiveXObject("Microsoft.XMLHTTP");
-                    if (requete) {
-                        requete.open("GET", url, true);
-                        requete.onreadystatechange = majPlayers;
-                        requete.send();  
-                    }
-                } else {
-                    alert("Le navigateur ne supporte pas la technologie Ajax");
-                }
-            }
-            // Va mettre dans le corps des joueurs, les jours connectés
-            function majPlayers() {
-                if (requete.readyState == 4) {
-                    if (requete.status == 200) {
-                        document.getElementById("players_body").innerHTML = requete.responseText;
-                    } else {
-                        alert('Une erreur est survenue lors de la mise à jour de la page.'+
-                            '\n\nCode retour = '+requete.statusText);    
-                    }
-                }
             }
         </script>
     </head>
-    <body><h1> SI-FU-MI </h1>
+    <body>
+        <h1> SI-FU-MI </h1>
         <div class="header">
             <div class="message">
+                <%
+                    //session.setAttribute("FTDisplay", true);
+                    if (session.getAttribute("FTDisplay") == null) {
+                        System.out.println("set attribute FirstTime");
+                        firstTime = true;
+                        session.setAttribute("FTDisplay", firstTime); 
+                    } else {
+                        firstTime = (Boolean) session.getAttribute("FTDisplay");
+                    }
+                    
+                    try {
+                        if (firstTime) {
+                            System.out.println("FirstTime");
+                            firstTime = false;
+                            session.setAttribute("FTDisplay", firstTime);
+                        } else {
+                            System.out.println("Wait message");
+                            message = (ObjectMessage) subscriber.receive();
+                            Update c = (Update) message.getObject();
+                            if (c.connected) {
+                                System.out.println("connected");
+                %>
+                <div class="ok">
+                    Le joueur <%= c.pseudo%> s'est connecté
+                </div>
+                <%
+                } else {
+                %>
+                <div class="ok">
+                    Le joueur <%= c.pseudo%> s'est déconnecté
+                </div>
+                <%
+                        }
+                    }
+                %>
                 <!-- <div class="erreur">
                     Vous ne pouvez pas effectuer cette action
                 </div> -->
@@ -98,7 +146,7 @@
         </div>
         <script type="text/javascript">
             // Rafraichi la liste des joueurs
-            var x = setInterval(getPlayers, 3000);
+            //var x = setInterval(getPlayers, 3000);
         </script>
         <div class="gauche">
             <h2><center>Liste des concurrents</center></h2>
@@ -116,7 +164,7 @@
                     <%
                         // Lister tous les participants
                         List players = psb.getConnectedPlayers();
-                        out.print(Helpers.playersListToHTML(players));
+                        out.print(playersListToHTML(players));
                     %>
                 </tbody>
             </table>
@@ -136,7 +184,7 @@
                     <%
                         // Lister tous les participants
                         List defiant = psb.getDefies();
-                        out.print(Helpers.playersListToHTML(defiant));
+                        out.print(playersListToHTML(defiant));
                     %>
                 </tbody>
             </table>
@@ -157,6 +205,12 @@
             window.location.href="index.jsp";
         </script>
         <%                            }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         %>
+        <script type="text/javascript">
+            window.location.reload(true);
+        </script>
     </body>
 </html>

@@ -5,16 +5,22 @@
 package enterprise.game_room_ejb.ejb.session;
 
 import enterprise.game_room_ejb.common.PlayerNotFoundException;
+import enterprise.game_room_ejb.mdb.Update;
 import enterprise.game_room_ejb.persistence.Defi;
 import enterprise.game_room_ejb.persistence.Player;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.Remove;
 import javax.ejb.Stateful;
+import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
+import javax.jms.ObjectMessage;
+import javax.jms.Session;
 import javax.jms.Topic;
 import javax.jms.TopicConnection;
 import javax.jms.TopicConnectionFactory;
@@ -40,7 +46,6 @@ public class PlayerSessionBean implements PlayerSessionBeanLocal {
     TopicSession topicSession;
     TopicPublisher topicPublisher;
     String subName;
-    MessageConsumer topicSubscriber;
 
     @PersistenceContext(unitName = "persistence_sample")
     private EntityManager em;
@@ -95,22 +100,21 @@ public class PlayerSessionBean implements PlayerSessionBeanLocal {
         player.setConnected(true);
         persist(player);
         
-//        try {
-//            // Init de la connexion avec le topic
-//            topicConnection = topicConnectionFactory.createTopicConnection();
-//            topicSession = topicConnection.createTopicSession(false, Session.AUTO_ACKNOWLEDGE);
-//            // Publish
-//            topicPublisher = topicSession.createPublisher(topic);
-//            // création et envoi du message
-//            ObjectMessage message = topicSession.createObjectMessage(new Connexion(player.getId(),player.getPseudo(),player.getScore()));
-//            topicPublisher.publish(message);
-//            // fermeture car on ne plishera plus rien jusqu'a la fermeture de la session
-//            topicPublisher.close();
-//            // Subscribe
-//            topicSubscriber = topicSession.createDurableSubscriber(topic, subName);
-//        } catch (JMSException e) {
-//            System.out.println("Exception occurred: " + e.toString());
-//        }
+        try {
+            // Init de la connexion avec le topic
+            topicConnection = topicConnectionFactory.createTopicConnection();
+            topicSession = topicConnection.createTopicSession(false, Session.AUTO_ACKNOWLEDGE);
+            // Publish
+            topicPublisher = topicSession.createPublisher(topic);
+            // création et envoi du message
+            ObjectMessage message = topicSession.createObjectMessage(new Update(player.getId(),player.getPseudo(),player.getScore(),true));
+            topicPublisher.publish(message);
+            // fermeture car on ne plishera plus rien jusqu'a la fermeture de la session
+            topicPublisher.close();
+            // Subscribe
+        } catch (JMSException e) {
+            System.out.println("Exception occurred: " + e.toString());
+        }
     }
     
 //    public List<Update> getUpdates() {
@@ -136,19 +140,18 @@ public class PlayerSessionBean implements PlayerSessionBeanLocal {
         em.merge(player);
         // Suppression du player de bean
         player = null;
-//        try {
-//            // Publish
-//            topicPublisher = topicSession.createPublisher(topic);
-//            // création et envoi du message
-//            ObjectMessage message = topicSession.createObjectMessage(new Deconnexion(player.getId()));
-//            topicPublisher.publish(message);
-//            // fermeture de toutes les connexions
-//            topicPublisher.close();
-//            topicSubscriber.close();
-//            topicConnection.close();
-//        } catch (JMSException ex) {
-//            Logger.getLogger(PlayerSessionBean.class.getName()).log(Level.SEVERE, null, ex);
-//        }
+        try {
+            // Publish
+            topicPublisher = topicSession.createPublisher(topic);
+            // création et envoi du message
+            ObjectMessage message = topicSession.createObjectMessage(new Update(player.getId(),player.getPseudo(),player.getScore(),false));
+            topicPublisher.publish(message);
+            // fermeture de toutes les connexions
+            topicPublisher.close();
+            topicConnection.close();
+        } catch (JMSException ex) {
+            Logger.getLogger(PlayerSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Override

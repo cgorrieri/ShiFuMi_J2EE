@@ -4,7 +4,6 @@
  */
 package enterprise.game_room_ejb.mdb;
 
-import com.sun.xml.rpc.processor.modeler.j2ee.xml.string;
 import javax.annotation.Resource;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
