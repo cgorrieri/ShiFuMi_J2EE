@@ -34,8 +34,17 @@ public class ConnexionMessageBean implements MessageListener {
         if(message instanceof ObjectMessage) {
             try {
                 ObjectMessage obj = (ObjectMessage) message;
-                Update c = (Update) obj.getObject();
-                System.out.println("<!!"+c.pseudo+","+c.id+"!!>");
+                Update u = (Update) obj.getObject();
+                if(u.type == TypeUpdate.CONNEXION) {
+                    DeConnection c = (DeConnection) u;
+                    System.out.print("<!!"+c.pseudo+" est ");
+                    if(c.connected)
+                        System.out.println("connecté!!>");
+                    else System.out.println("déconnecté!!>");
+                } else {
+                    Defi d = (Defi) u;
+                    System.out.println("<!!"+d.pseudo+" à défié "+d.defieId+"!!>");
+                }
             } catch (JMSException ex) {
                 Logger.getLogger(ConnexionMessageBean.class.getName()).log(Level.SEVERE, null, ex);
             }

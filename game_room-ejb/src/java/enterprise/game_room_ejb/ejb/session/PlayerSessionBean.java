@@ -5,12 +5,10 @@
 package enterprise.game_room_ejb.ejb.session;
 
 import enterprise.game_room_ejb.common.PlayerNotFoundException;
-import enterprise.game_room_ejb.mdb.Update;
-import enterprise.game_room_ejb.persistence.Defi;
+import enterprise.game_room_ejb.mdb.DeConnection;
+import enterprise.game_room_ejb.mdb.Defi;
 import enterprise.game_room_ejb.persistence.Player;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,7 +16,6 @@ import javax.annotation.Resource;
 import javax.ejb.Remove;
 import javax.ejb.Stateful;
 import javax.jms.JMSException;
-import javax.jms.MessageConsumer;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 import javax.jms.Topic;
@@ -41,6 +38,16 @@ public class PlayerSessionBean implements PlayerSessionBeanLocal {
     
     @Resource(mappedName = "jms/ConnexionTopic")
     private Topic topic;
+    
+    /**
+     * Liste des joueur qui a lancé un défi
+     */
+    private List<Player> defisRecus;
+    
+    /**
+     * Les défis que nous avons lancé
+     */
+    private List<Defi> defisLance;
     
     TopicConnection topicConnection;
     TopicSession topicSession;
@@ -100,6 +107,9 @@ public class PlayerSessionBean implements PlayerSessionBeanLocal {
         player.setConnected(true);
         persist(player);
         
+        defisLance = new ArrayList<Defi>();
+        defisRecus = new ArrayList<Player>();
+        
         try {
             // Init de la connexion avec le topic
             topicConnection = topicConnectionFactory.createTopicConnection();
@@ -107,10 +117,10 @@ public class PlayerSessionBean implements PlayerSessionBeanLocal {
             // Publish
             topicPublisher = topicSession.createPublisher(topic);
             // création et envoi du message
-            ObjectMessage message = topicSession.createObjectMessage(new Update(player.getId(),player.getPseudo(),player.getScore(),true));
+            ObjectMessage message = topicSession.createObjectMessage(new DeConnection(player.getId(),player.getPseudo(),player.getScore(),true));
             topicPublisher.publish(message);
             // fermeture car on ne plishera plus rien jusqu'a la fermeture de la session
-            topicPublisher.close();
+            //topicPublisher.close();
             // Subscribe
         } catch (JMSException e) {
             System.out.println("Exception occurred: " + e.toString());
@@ -138,43 +148,75 @@ public class PlayerSessionBean implements PlayerSessionBeanLocal {
         // Enregistrement en BDD que le player est déconnecter
         player.setConnected(false);
         em.merge(player);
-        // Suppression du player de bean
-        player = null;
         try {
             // Publish
-            topicPublisher = topicSession.createPublisher(topic);
+            //topicPublisher = topicSession.createPublisher(topic);
             // création et envoi du message
-            ObjectMessage message = topicSession.createObjectMessage(new Update(player.getId(),player.getPseudo(),player.getScore(),false));
+            ObjectMessage message = topicSession.createObjectMessage(new DeConnection(player.getId(),player.getPseudo(),player.getScore(),false));
             topicPublisher.publish(message);
             // fermeture de toutes les connexions
             topicPublisher.close();
+            topicSession.close();
             topicConnection.close();
+            // Suppression du player de bean
+            player = null;
         } catch (JMSException ex) {
             Logger.getLogger(PlayerSessionBean.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
+//    @Override
+//    public List getDefies() {
+//        List players = new ArrayList();
+//        Iterator<Defi> i = player.getDefiesRecu().iterator();
+//        while(i.hasNext()) {
+//            players.add(i.next().getDefiant());
+//        }
+//        return players;
+//    }
+    
     @Override
-    public List getDefies() {
-        List players = new ArrayList();
-        Iterator<Defi> i = player.getDefiesRecu().iterator();
-        while(i.hasNext()) {
-            players.add(i.next().getDefiant());
-        }
-        return players;
+    public List<Player> getDefies() {
+        return defisRecus;
+    }
+    
+    @Override
+    public boolean addDefis(Long id) {
+        // Si le défi ne nous est pas addressé
+        if(!id.equals(player.getId())) return false;
+        
+        Player p = (Player) em.find(Player.class, id);
+        defisRecus.add(p);
+        return true;
     }
     
     @Override
     public void defier(Long id) {
-        // récuperer defied player
-        Player defie = (Player)em.find(Player.class, id);
-        Defi d = new Defi(player, defie, new Date());
-        persist(d);
+        try {
+            // création du defi
+            Defi d = new Defi(player.getId(), player.getPseudo(), id);
+            defisLance.add(d);
+            // envoi du défis dans le topic
+            ObjectMessage message = topicSession.createObjectMessage(d);
+            topicPublisher.publish(message);
+        } catch (JMSException ex) {
+            Logger.getLogger(PlayerSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
+    
+    
+//    @Override
+//    public void defier(Long id) {
+//        // récuperer defied player
+//        Player defie = (Player)em.find(Player.class, id);
+//        Defi d = new Defi(player, defie, new Date());
+//        persist(d);
+//    }
 
     @Override
-    public void accepterDefi(String pseudo) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void accepterDefi(Long id) {
+        // Lancer processus de défi
+        //throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override

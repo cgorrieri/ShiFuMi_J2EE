@@ -10,17 +10,14 @@ import java.io.Serializable;
  *
  * @author user
  */
-public class Update implements Serializable {
+abstract public class Update implements Serializable {
+    public TypeUpdate type;
     public Long id;
     public String pseudo;
-    public int points;
-    public boolean connected;
     
-    public Update(Long id, String pseudo, int points, boolean connected) {
+    public Update(Long id, String pseudo, TypeUpdate type) {
+        this.type = type;
         this.id = id;
         this.pseudo = pseudo;
-        this.points = points;
-        this.connected = connected;
     }
-    
 }

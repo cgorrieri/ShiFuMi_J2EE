@@ -1,10 +1,13 @@
+<%@page import="enterprise.game_room_ejb.mdb.Defi"%>
+<%@page import="enterprise.game_room_ejb.mdb.Update"%>
+<%@page import="enterprise.game_room_ejb.mdb.DeConnection"%>
+<%@page import="enterprise.game_room_ejb.mdb.TypeUpdate"%>
 <%@page import="javax.jms.ObjectMessage"%>
 <%@page import="javax.jms.Connection"%>
 <%@page import="javax.jms.Session"%>
 <%@page import="javax.jms.ConnectionFactory"%>
 <%@page import="javax.ejb.Init"%>
 <%@page import="javax.naming.InitialContext"%>
-<%@page import="enterprise.game_room_ejb.mdb.Update"%>
 <%@page import="javax.jms.MessageConsumer"%>
 <%@page import="javax.jms.TopicConnection"%>
 <%@page import="javax.jms.Topic"%>
@@ -16,7 +19,6 @@
 <%@page import="enterprise.game_room_ejb.persistence.Player"%>
 
 <%! // Fera partie de la classe rendu du jsp
-    
     // Champ privé de la classe
     Boolean firstTime;
     //@Resource(mappedName = "jms/ConnexionTopicCF")
@@ -39,25 +41,25 @@
             connection = connectionFactory.createConnection();
             jmsSession = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
             subscriber = jmsSession.createConsumer(topic);
-            
+
             connection.start();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    
+
     // methode de destroy override
     public void jspDestroy() {
         try {
-           connection.stop();
-           subscriber.close();
-           jmsSession.close();
-           connection.close();
+            connection.stop();
+            subscriber.close();
+            jmsSession.close();
+            connection.close();
         } catch (Exception ex) {
-           ex.printStackTrace();
+            ex.printStackTrace();
         }
     }
-    
+
     public String playersListToHTML(List players) {
         String resultat = "";
         for (int i = 0; i < players.size(); i++) {
@@ -66,7 +68,21 @@
                     + "<td>" + p.getPseudo() + "</td>"
                     + "<td>" + p.getScore() + "</td>"
                     + "<td>" + p.getEtat() + "</td>"
-                    + "<td><a onclick='defier(" + p.getId() + ");'>défier</a></td>"
+                    + "<td><a href='?defier=" + p.getId() + "'>défier</a></td>"
+                    + "</tr>";
+        }
+        return resultat;
+    }
+    
+    public String defiesListToHTML(List<Player> players) {
+        String resultat = "";
+        for (int i = 0; i < players.size(); i++) {
+            Player p = players.get(i);
+            resultat += "<tr>"
+                    + "<td>" + p.getPseudo() + "</td>"
+                    + "<td>" + p.getScore() + "</td>"
+                    + "<td>" + p.getEtat() + "</td>"
+                    + "<td><a href='?accepter=" + p.getId() + "'>Accepter</a></td>"
                     + "</tr>";
         }
         return resultat;
@@ -93,6 +109,20 @@
     </head>
     <body>
         <h1> SI-FU-MI </h1>
+        <%
+            if (session.getAttribute("PSB") != null) {
+                PlayerSessionBeanLocal psb = (PlayerSessionBeanLocal) session.getAttribute("PSB");
+                
+                String defier = request.getParameter("defier");
+                if (defier != null && !"".equals(defier)) {
+                    psb.defier(Long.valueOf(defier));
+                }
+                String accepter = request.getParameter("accepter");
+                if (accepter != null && !"".equals(accepter)) {
+                    psb.accepterDefi(Long.valueOf(accepter));
+                }
+                    
+        %>
         <div class="header">
             <div class="message">
                 <%
@@ -100,11 +130,11 @@
                     if (session.getAttribute("FTDisplay") == null) {
                         System.out.println("set attribute FirstTime");
                         firstTime = true;
-                        session.setAttribute("FTDisplay", firstTime); 
+                        session.setAttribute("FTDisplay", firstTime);
                     } else {
                         firstTime = (Boolean) session.getAttribute("FTDisplay");
                     }
-                    
+
                     try {
                         if (firstTime) {
                             System.out.println("FirstTime");
@@ -113,20 +143,31 @@
                         } else {
                             System.out.println("Wait message");
                             message = (ObjectMessage) subscriber.receive();
-                            Update c = (Update) message.getObject();
-                            if (c.connected) {
-                                System.out.println("connected");
+                            Update u = (Update) message.getObject();
+                            if (u.type == TypeUpdate.CONNEXION) {
+                                DeConnection c = (DeConnection) u;
+                                System.out.print("<!!" + c.pseudo + " est ");
+                                if (c.connected) {
                 %>
                 <div class="ok">
                     Le joueur <%= c.pseudo%> s'est connecté
                 </div>
-                <%
-                } else {
+                <% } else {
                 %>
-                <div class="ok">
+                <div class="erreur">
                     Le joueur <%= c.pseudo%> s'est déconnecté
                 </div>
                 <%
+                            }
+                        } else {
+                            Defi d = (Defi) u;
+                            if (psb.addDefis(d.defieId)) {
+                             %>
+                                <div class="ok">
+                                    Le joueur <%= d.pseudo%> vous a défié
+                                </div>
+                                <%   
+                            }
                         }
                     }
                 %>
@@ -135,10 +176,7 @@
                 </div> -->
             </div>
         </div>
-        <%
-            if (session.getAttribute("PSB") != null) {
-                PlayerSessionBeanLocal psb = (PlayerSessionBeanLocal) session.getAttribute("PSB");
-        %>
+
         <div class="carre_connexion">
             Bonjour <%out.print(psb.getPlayer().getPseudo() + " (" + psb.getPlayer().getId() + ")");%> <br/>
             <% out.print(psb.getPlayer().getScore());%> points <br/>
@@ -190,6 +228,9 @@
             </table>
         </div>
         <%
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         } else {
         %>
         <div class="header">
@@ -205,9 +246,6 @@
             window.location.href="index.jsp";
         </script>
         <%                            }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         %>
         <script type="text/javascript">
             window.location.reload(true);

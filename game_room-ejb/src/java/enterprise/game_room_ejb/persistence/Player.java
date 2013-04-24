@@ -6,7 +6,6 @@ package enterprise.game_room_ejb.persistence;
 
 import enterprise.game_room_ejb.common.EnumState;
 import java.io.Serializable;
-import java.util.LinkedList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -46,13 +45,13 @@ public class Player implements Serializable {
     private String mdp;
     @NotNull
     private boolean connected = false;
-    
-    // Relation avec le champ privé "defie" de Defi
-    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy = "defie")
-    private List<Defi> defiesRecu;
-    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER, mappedBy = "defiant")
-    private List<Defi> defiesLance;
-    
+//    
+//    // Relation avec le champ privé "defie" de Defi
+//    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy = "defie")
+//    private List<Defi> defiesRecu;
+//    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER, mappedBy = "defiant")
+//    private List<Defi> defiesLance;
+//    
     private int points;
     private EnumState etat;
 
@@ -127,21 +126,21 @@ public class Player implements Serializable {
         return "En Attente";
     }
 
-    public List<Defi> getDefiesRecu() {
-        return defiesRecu;
-    }
-
-    public void setDefiesRecu(List<Defi> defiesRecu) {
-        this.defiesRecu = defiesRecu;
-    }
-
-    public List<Defi> getDefiesLance() {
-        return defiesLance;
-    }
-
-    public void setDefiesLance(List<Defi> defiesLance) {
-        this.defiesLance = defiesLance;
-    }
+//    public List<Defi> getDefiesRecu() {
+//        return defiesRecu;
+//    }
+//
+//    public void setDefiesRecu(List<Defi> defiesRecu) {
+//        this.defiesRecu = defiesRecu;
+//    }
+//
+//    public List<Defi> getDefiesLance() {
+//        return defiesLance;
+//    }
+//
+//    public void setDefiesLance(List<Defi> defiesLance) {
+//        this.defiesLance = defiesLance;
+//    }
 
     @Override
     public int hashCode() {
