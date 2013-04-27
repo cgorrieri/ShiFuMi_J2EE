@@ -72,7 +72,7 @@
         return resultat;
     }
 
-    public String defiesListToHTML(List<Player> players) {
+    public String defiantstToHTML(List<Player> players) {
         String resultat = "";
         for (int i = 0; i < players.size(); i++) {
             Player p = players.get(i);
@@ -231,7 +231,7 @@
                     <%
                         // Lister tous les participants
                         List defiant = psb.getDefies();
-                        out.print(playersListToHTML(defiant));
+                        out.print(defiantstToHTML(defiant));
                     %>
                 </tbody>
             </table>
