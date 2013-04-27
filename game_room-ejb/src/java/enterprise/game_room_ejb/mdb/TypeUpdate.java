@@ -5,9 +5,8 @@
 package enterprise.game_room_ejb.mdb;
 
 /**
- *
- * @author user
+ * Les différents type de mise à jours possible
  */
 public enum TypeUpdate {
-    CONNEXION, DEFI
+    CONNEXION, DEFI, ACCEPTATION, ANNULATION
 }

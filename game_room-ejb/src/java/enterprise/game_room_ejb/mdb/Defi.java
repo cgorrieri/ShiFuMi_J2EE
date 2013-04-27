@@ -4,20 +4,17 @@
  */
 package enterprise.game_room_ejb.mdb;
 
-import java.util.Date;
-
 /**
- *
- * @author user
+ *  Message d'un défi
+ * 
  */
 public class Defi extends Update {
+    // L'id du joueur défié
     public Long defieId;
-    public Date launch;
     
     public Defi(Long id, String pseudo, Long dest) {
         super(id, pseudo, TypeUpdate.DEFI);
-        this.defieId = dest; 
-        this.launch = new Date();
+        this.defieId = dest;
     }
     
 }

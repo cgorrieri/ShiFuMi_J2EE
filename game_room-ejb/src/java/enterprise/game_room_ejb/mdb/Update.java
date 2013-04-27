@@ -7,12 +7,14 @@ package enterprise.game_room_ejb.mdb;
 import java.io.Serializable;
 
 /**
- *
- * @author user
+ * Base de message envoyé par un joueur
  */
 abstract public class Update implements Serializable {
+    // type de la mise à jour
     public TypeUpdate type;
+    // Id du joueur émétant
     public Long id;
+    // Pseudo du joueur émétant
     public String pseudo;
     
     public Update(Long id, String pseudo, TypeUpdate type) {

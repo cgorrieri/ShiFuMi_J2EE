@@ -5,8 +5,9 @@
 package enterprise.game_room_ejb.mdb;
 
 /**
- *
- * @author user
+ * Message de connexion/déconnexion
+ * Un joueur envoi ce message avec sa description
+ * lorsqu'il se connecte ou déconnecte
  */
 public class DeConnection extends Update {
     public int points;
