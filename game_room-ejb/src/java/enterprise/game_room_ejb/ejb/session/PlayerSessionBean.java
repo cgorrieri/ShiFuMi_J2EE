@@ -5,8 +5,8 @@
 package enterprise.game_room_ejb.ejb.session;
 
 import enterprise.game_room_ejb.common.PlayerNotFoundException;
-import enterprise.game_room_ejb.mdb.DeConnection;
-import enterprise.game_room_ejb.mdb.Defi;
+import enterprise.game_room_ejb.mdb.TypeUpdate;
+import enterprise.game_room_ejb.mdb.Update;
 import enterprise.game_room_ejb.persistence.Player;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +47,7 @@ public class PlayerSessionBean implements PlayerSessionBeanLocal {
     /**
      * Les défis que nous avons lancé
      */
-    private List<Defi> defisLance;
+    //private List<Defi> defisLance;
     
     TopicConnection topicConnection;
     TopicSession topicSession;
@@ -107,7 +107,7 @@ public class PlayerSessionBean implements PlayerSessionBeanLocal {
         player.setConnected(true);
         persist(player);
         
-        defisLance = new ArrayList<Defi>();
+        //defisLance = new ArrayList<Defi>();
         defisRecus = new ArrayList<Player>();
         
         try {
@@ -117,7 +117,7 @@ public class PlayerSessionBean implements PlayerSessionBeanLocal {
             // Publish
             topicPublisher = topicSession.createPublisher(topic);
             // création et envoi du message
-            ObjectMessage message = topicSession.createObjectMessage(new DeConnection(player.getId(),player.getPseudo(),player.getScore(),true));
+            ObjectMessage message = topicSession.createObjectMessage(new Update(player.getId(),player.getPseudo(),TypeUpdate.CONNEXION));
             topicPublisher.publish(message);
             // fermeture car on ne plishera plus rien jusqu'a la fermeture de la session
             //topicPublisher.close();
@@ -152,7 +152,7 @@ public class PlayerSessionBean implements PlayerSessionBeanLocal {
             // Publish
             //topicPublisher = topicSession.createPublisher(topic);
             // création et envoi du message
-            ObjectMessage message = topicSession.createObjectMessage(new DeConnection(player.getId(),player.getPseudo(),player.getScore(),false));
+            ObjectMessage message = topicSession.createObjectMessage(new Update(player.getId(),player.getPseudo(),TypeUpdate.DECONNEXION));
             topicPublisher.publish(message);
             // fermeture de toutes les connexions
             topicPublisher.close();
@@ -176,6 +176,11 @@ public class PlayerSessionBean implements PlayerSessionBeanLocal {
 //    }
     
     @Override
+    public boolean isMessageForMe(Long id) {
+        return player.getId().equals(id);
+    }
+    
+    @Override
     public List<Player> getDefies() {
         return defisRecus;
     }
@@ -194,8 +199,8 @@ public class PlayerSessionBean implements PlayerSessionBeanLocal {
     public void defier(Long id) {
         try {
             // création du defi
-            Defi d = new Defi(player.getId(), player.getPseudo(), id);
-            defisLance.add(d);
+            Update d = new Update(player.getId(), player.getPseudo(), TypeUpdate.DEFI, id);
+            //defisLance.add(d);
             // envoi du défis dans le topic
             ObjectMessage message = topicSession.createObjectMessage(d);
             topicPublisher.publish(message);

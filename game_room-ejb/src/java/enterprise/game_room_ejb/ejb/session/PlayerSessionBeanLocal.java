@@ -36,4 +36,6 @@ public interface PlayerSessionBeanLocal {
     void defier(Long id);
 
     boolean addDefis(Long id);
+    
+    boolean isMessageForMe(Long id);
 }

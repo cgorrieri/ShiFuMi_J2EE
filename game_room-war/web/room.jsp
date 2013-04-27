@@ -1,6 +1,4 @@
-<%@page import="enterprise.game_room_ejb.mdb.Defi"%>
 <%@page import="enterprise.game_room_ejb.mdb.Update"%>
-<%@page import="enterprise.game_room_ejb.mdb.DeConnection"%>
 <%@page import="enterprise.game_room_ejb.mdb.TypeUpdate"%>
 <%@page import="javax.jms.ObjectMessage"%>
 <%@page import="javax.jms.Connection"%>
@@ -73,7 +71,7 @@
         }
         return resultat;
     }
-    
+
     public String defiesListToHTML(List<Player> players) {
         String resultat = "";
         for (int i = 0; i < players.size(); i++) {
@@ -112,7 +110,7 @@
         <%
             if (session.getAttribute("PSB") != null) {
                 PlayerSessionBeanLocal psb = (PlayerSessionBeanLocal) session.getAttribute("PSB");
-                
+
                 String defier = request.getParameter("defier");
                 if (defier != null && !"".equals(defier)) {
                     psb.defier(Long.valueOf(defier));
@@ -121,7 +119,7 @@
                 if (accepter != null && !"".equals(accepter)) {
                     psb.accepterDefi(Long.valueOf(accepter));
                 }
-                    
+
         %>
         <div class="header">
             <div class="message">
@@ -142,31 +140,42 @@
                             session.setAttribute("FTDisplay", firstTime);
                         } else {
                             System.out.println("Wait message");
-                            message = (ObjectMessage) subscriber.receive();
-                            Update u = (Update) message.getObject();
-                            if (u.type == TypeUpdate.CONNEXION) {
-                                DeConnection c = (DeConnection) u;
-                                System.out.print("<!!" + c.pseudo + " est ");
-                                if (c.connected) {
-                %>
-                <div class="ok">
-                    Le joueur <%= c.pseudo%> s'est connecté
-                </div>
-                <% } else {
-                %>
-                <div class="erreur">
-                    Le joueur <%= c.pseudo%> s'est déconnecté
-                </div>
-                <%
+                            boolean goOn = false;
+                            Update u = null;
+                            // Tant que le message ne nous est pas addressé
+                            while (!goOn) {
+                                message = (ObjectMessage) subscriber.receive();
+                                u = (Update) message.getObject();
+                                goOn = u.dest != null && psb.isMessageForMe(u.dest);
                             }
-                        } else {
-                            Defi d = (Defi) u;
-                            if (psb.addDefis(d.defieId)) {
-                             %>
-                                <div class="ok">
-                                    Le joueur <%= d.pseudo%> vous a défié
-                                </div>
-                                <%   
+
+                            if (u.type == TypeUpdate.CONNEXION) {
+                            %>
+                            <div class="ok">
+                                Le joueur <%= u.pseudo%> s'est connecté
+                            </div>
+                            <%
+                            } else if (u.type == TypeUpdate.DECONNEXION) {
+                            %>
+                            <div class="erreur">
+                                Le joueur <%= u.pseudo%> s'est déconnecté
+                            </div>
+                            <%
+                            } else if (u.type == TypeUpdate.ACCEPTATION) {
+                            %>
+                            <div class="ok">
+                                Le joueur <%= u.pseudo%> à accepter le défi
+                            </div>
+                            <%
+                            } else if (u.type == TypeUpdate.ANNULATION) {
+                                // psb.removeDefis               
+                            } else if (u.type == TypeUpdate.DEFI) {
+                                if (psb.addDefis(u.dest)) {
+                            %>
+                            <div class="ok">
+                                Le joueur <%= u.pseudo%> vous a défié
+                            </div>
+                            <%
                             }
                         }
                     }

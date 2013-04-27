@@ -36,14 +36,15 @@ public class ConnexionMessageBean implements MessageListener {
                 ObjectMessage obj = (ObjectMessage) message;
                 Update u = (Update) obj.getObject();
                 if(u.type == TypeUpdate.CONNEXION) {
-                    DeConnection c = (DeConnection) u;
-                    System.out.print("<!!"+c.pseudo+" est ");
-                    if(c.connected)
-                        System.out.println("connecté!!>");
-                    else System.out.println("déconnecté!!>");
+                    System.out.print("<!!"+u.pseudo+" est connecte!!>");
+                } else if(u.type == TypeUpdate.DECONNEXION) {
+                    System.out.print("<!!"+u.pseudo+" est deconnecte!!>");
+                } else if(u.type == TypeUpdate.ACCEPTATION) {
+                    System.out.print("<!!"+u.pseudo+" à accepter le defi de "+u.dest+"!!>");
+                } else if(u.type == TypeUpdate.ANNULATION) {
+                    System.out.print("<!! Le defi de "+u.pseudo+" à "+u.dest+" est annule!!>");
                 } else {
-                    Defi d = (Defi) u;
-                    System.out.println("<!!"+d.pseudo+" à défié "+d.defieId+"!!>");
+                    System.out.println("<!!"+u.pseudo+" à défié "+u.dest+"!!>");
                 }
             } catch (JMSException ex) {
                 Logger.getLogger(ConnexionMessageBean.class.getName()).log(Level.SEVERE, null, ex);
