@@ -90,19 +90,11 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
     <head>
+        <meta http-equiv="Content-type" content="text/html; charset=UTF-8"/>
         <link href="css/styletab.css" rel="stylesheet" type="text/css" />
         <link href="css/jeux.css" rel="stylesheet" type="text/css" />
-        <meta http-equiv="Content-type" content="text/html; charset=UTF-8"/>
         <script type="text/javascript">
-            function activdesactiv(){ 
-                var arg=activdesactiv.arguments; 
-                var t=arg[0]; 
-                if (document.getElementById(t).checked==false){ 
-                    document.getElementById(t).checked=true; 
-                } else { 
-                    document.getElementById(t).checked=false; 
-                } 
-            }
+            
         </script>
     </head>
     <body>

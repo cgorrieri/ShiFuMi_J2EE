@@ -220,6 +220,17 @@ public class PlayerSessionBean implements PlayerSessionBeanLocal {
 
     @Override
     public void accepterDefi(Long id) {
+        // On envoi le message comme quoi on a accepter
+        try {
+            // création du defi
+            Update d = new Update(player.getId(), player.getPseudo(), TypeUpdate.ACCEPTATION, id);
+            //defisLance.add(d);
+            // envoi du défis dans le topic
+            ObjectMessage message = topicSession.createObjectMessage(d);
+            topicPublisher.publish(message);
+        } catch (JMSException ex) {
+            Logger.getLogger(PlayerSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
         // Lancer processus de défi
         //throw new UnsupportedOperationException("Not supported yet.");
     }
