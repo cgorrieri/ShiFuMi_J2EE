@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 import javax.annotation.Resource;
 import javax.ejb.Remove;
 import javax.ejb.Stateful;
+import javax.jms.DeliveryMode;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
@@ -93,6 +94,12 @@ public class PlayerSessionBean implements PlayerSessionBeanLocal {
         }
         return (Player) l.get(0);
     }
+    
+    private void send(Update u) throws JMSException {
+        // envoi du défis dans le topic
+        ObjectMessage message = topicSession.createObjectMessage(u);
+        topicPublisher.publish(message, DeliveryMode.PERSISTENT, 0, 100);
+    }
 
     @Override
     public void connexion(String pseudo, String mdp) throws PlayerNotFoundException {
@@ -117,30 +124,13 @@ public class PlayerSessionBean implements PlayerSessionBeanLocal {
             // Publish
             topicPublisher = topicSession.createPublisher(topic);
             // création et envoi du message
-            ObjectMessage message = topicSession.createObjectMessage(new Update(player.getId(),player.getPseudo(),TypeUpdate.CONNEXION));
-            topicPublisher.publish(message);
-            // fermeture car on ne plishera plus rien jusqu'a la fermeture de la session
-            //topicPublisher.close();
+            send(new Update(player.getId(),player.getPseudo(),TypeUpdate.CONNEXION));
+            
             // Subscribe
         } catch (JMSException e) {
             System.out.println("Exception occurred: " + e.toString());
         }
     }
-    
-//    public List<Update> getUpdates() {
-//        
-//            List<Update> res = new ArrayList<Update>();
-//            Message m;
-//        try {
-//            while((m = topicSubscriber.receive(100)) != null) {
-//                res.add((Update)((ObjectMessage)m).getObject());
-//            }
-//            return res;
-//        } catch (JMSException ex) {
-//            Logger.getLogger(PlayerSessionBean.class.getName()).log(Level.SEVERE, null, ex);
-//            return null;
-//        }
-//    }
     
     @Override
     @Remove
@@ -152,8 +142,7 @@ public class PlayerSessionBean implements PlayerSessionBeanLocal {
             // Publish
             //topicPublisher = topicSession.createPublisher(topic);
             // création et envoi du message
-            ObjectMessage message = topicSession.createObjectMessage(new Update(player.getId(),player.getPseudo(),TypeUpdate.DECONNEXION));
-            topicPublisher.publish(message);
+            send(new Update(player.getId(),player.getPseudo(),TypeUpdate.DECONNEXION));
             // fermeture de toutes les connexions
             topicPublisher.close();
             topicSession.close();
@@ -187,9 +176,6 @@ public class PlayerSessionBean implements PlayerSessionBeanLocal {
     
     @Override
     public boolean addDefis(Long id) {
-        // Si le défi ne nous est pas addressé
-        if(!id.equals(player.getId())) return false;
-        
         Player p = (Player) em.find(Player.class, id);
         defisRecus.add(p);
         return true;
@@ -201,33 +187,21 @@ public class PlayerSessionBean implements PlayerSessionBeanLocal {
             // création du defi
             Update d = new Update(player.getId(), player.getPseudo(), TypeUpdate.DEFI, id);
             //defisLance.add(d);
-            // envoi du défis dans le topic
-            ObjectMessage message = topicSession.createObjectMessage(d);
-            topicPublisher.publish(message);
+            send(d);
         } catch (JMSException ex) {
             Logger.getLogger(PlayerSessionBean.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    
-//    @Override
-//    public void defier(Long id) {
-//        // récuperer defied player
-//        Player defie = (Player)em.find(Player.class, id);
-//        Defi d = new Defi(player, defie, new Date());
-//        persist(d);
-//    }
 
     @Override
     public void accepterDefi(Long id) {
         // On envoi le message comme quoi on a accepter
         try {
             // création du defi
-            Update d = new Update(player.getId(), player.getPseudo(), TypeUpdate.ACCEPTATION, id);
+            Update u = new Update(player.getId(), player.getPseudo(), TypeUpdate.ACCEPTATION, id);
             //defisLance.add(d);
             // envoi du défis dans le topic
-            ObjectMessage message = topicSession.createObjectMessage(d);
-            topicPublisher.publish(message);
+            send(u);
         } catch (JMSException ex) {
             Logger.getLogger(PlayerSessionBean.class.getName()).log(Level.SEVERE, null, ex);
         }

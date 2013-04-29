@@ -140,7 +140,7 @@
                                 u = (Update) message.getObject();
                                 goOn = u.dest != null && psb.isMessageForMe(u.dest);
                             }
-
+                            System.out.println("Mmessage received");
                             if (u.type == TypeUpdate.CONNEXION) {
                             %>
                             <div class="ok">
