@@ -68,6 +68,7 @@
                                 PlayerSessionBeanLocal playerSession = (PlayerSessionBeanLocal) o;
 
                                 playerSession.connexion(pseudo, mdp);
+                                session.setAttribute("PlayerId", playerSession.getPlayer().getId());
                                 %>
                                 <div class="ok">Connexion réussie.<br/>
                                     Redirection vers la salle de jeux...
@@ -76,7 +77,7 @@
                                     window.location.href="room.jsp";
                                 </script>
                                 <%
-                                session.setAttribute("PSB", playerSession);                                   
+                                session.setAttribute("PSB", playerSession);
                             } catch (PlayerNotFoundException e) {
                                 %>
                                  <div class="erreur" id="ima">Identifiant ou mot de passe invalide</div>

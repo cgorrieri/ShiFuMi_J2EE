@@ -27,7 +27,7 @@ public interface PlayerSessionBeanLocal {
     
     void deconnexion();
     
-    void accepterDefi(Long id);
+    GameSessionBeanLocal accepterDefi(Long id);
     
     Player getPlayer();
 

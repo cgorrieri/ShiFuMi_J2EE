@@ -7,6 +7,7 @@ package enterprise.game_room_ejb.ejb.session;
 import enterprise.game_room_ejb.common.PlayerNotFoundException;
 import enterprise.game_room_ejb.mdb.TypeUpdate;
 import enterprise.game_room_ejb.mdb.Update;
+import enterprise.game_room_ejb.mdb.UpdateAcceptation;
 import enterprise.game_room_ejb.persistence.Player;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,7 @@ import javax.jms.TopicConnection;
 import javax.jms.TopicConnectionFactory;
 import javax.jms.TopicPublisher;
 import javax.jms.TopicSession;
+import javax.naming.InitialContext;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -59,6 +61,7 @@ public class PlayerSessionBean implements PlayerSessionBeanLocal {
     private EntityManager em;
     private Player player;
 
+    @Override
     public Player getPlayer() {
         return player;
     }
@@ -194,16 +197,20 @@ public class PlayerSessionBean implements PlayerSessionBeanLocal {
     }
 
     @Override
-    public void accepterDefi(Long id) {
+    public GameSessionBeanLocal accepterDefi(Long id) {
         // On envoi le message comme quoi on a accepter
         try {
+            GameSessionBeanLocal gsb = new GameSessionBean();
+            gsb.setJ2(player);
             // création du defi
-            Update u = new Update(player.getId(), player.getPseudo(), TypeUpdate.ACCEPTATION, id);
+            Update u = new UpdateAcceptation(player.getId(), player.getPseudo(), id, gsb);
             //defisLance.add(d);
             // envoi du défis dans le topic
             send(u);
+            return gsb;
         } catch (JMSException ex) {
             Logger.getLogger(PlayerSessionBean.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
         // Lancer processus de défi
         //throw new UnsupportedOperationException("Not supported yet.");

@@ -1,3 +1,5 @@
+<%@page import="enterprise.game_room_ejb.mdb.UpdateAcceptation"%>
+<%@page import="enterprise.game_room_ejb.ejb.session.GameSessionBeanLocal"%>
 <%@page import="enterprise.game_room_ejb.mdb.Update"%>
 <%@page import="enterprise.game_room_ejb.mdb.TypeUpdate"%>
 <%@page import="javax.jms.ObjectMessage"%>
@@ -109,7 +111,13 @@
                 }
                 String accepter = request.getParameter("accepter");
                 if (accepter != null && !"".equals(accepter)) {
-                    psb.accepterDefi(Long.valueOf(accepter));
+                    GameSessionBeanLocal gsb = psb.accepterDefi(Long.valueOf(accepter));
+                    session.setAttribute("GSB", gsb); 
+                    %>
+                        <script type="text/javascript">
+                                    window.location.href="jeux.jsp";
+                                </script>
+                    <%
                 }
 
         %>
@@ -150,10 +158,16 @@
                             </div>
                             <%
                             } else if (u.type == TypeUpdate.ACCEPTATION) {
+                                UpdateAcceptation ua = (UpdateAcceptation) u;
+                                ua.gsb.setJ1(psb.getPlayer());
+                                session.setAttribute("GSB", ua.gsb);
                             %>
                             <div class="ok">
                                 Le joueur <%= u.pseudo%> à accepter le défi
                             </div>
+                            <script type="text/javascript">
+                                    window.location.href="jeux.jsp";
+                                </script>
                             <%
                             } else if (u.type == TypeUpdate.ANNULATION) {
                                 // psb.removeDefis               

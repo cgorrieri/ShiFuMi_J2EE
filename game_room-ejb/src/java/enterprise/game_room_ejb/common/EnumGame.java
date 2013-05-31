@@ -9,7 +9,7 @@ package enterprise.game_room_ejb.common;
  * @author user
  */
 public enum EnumGame {
-    PIERRE("pierre"), FEUILLE("feuille"), CISEAU("ciseau");
+    PIERRE("pierre"), FEUILLE("feuille"), CISEAU("ciseau"), UNKNOW("unknow");
     
     String elem;
     
@@ -25,36 +25,30 @@ public enum EnumGame {
      * Retourne le numero de joueur qui gagne
      * @param joueur1
      * @param joueur2
-     * @return 0 si ex-equo, 1 si le joueur 1 gagne, 2 si le joueur 2 gagne, -1 si non defini
+     * @return 0 si ex-equo ou non défini, 1 si le joueur 1 gagne, -1 s'il pert
      */
-    public int getWhoWin(EnumGame joueur1, EnumGame joueur2){
+    public static int getWhoWin(EnumGame joueur1, EnumGame joueur2){
         if(joueur1.equals(joueur2)) {
             return 0;
         }
-        if(joueur1.equals(PIERRE.getElem()) && joueur2.equals(FEUILLE.getElem()) ){
-            return 2;
+        else if(joueur1.equals(PIERRE.getElem()) && joueur2.equals(FEUILLE.getElem()) ){
+            return -1;
         }
-        
-        if(joueur1.equals(FEUILLE.getElem()) && joueur2.equals(PIERRE.getElem()) ){
+        else if(joueur1.equals(FEUILLE.getElem()) && joueur2.equals(PIERRE.getElem()) ){
             return 1;
         }
-        
-        if(joueur1.equals(PIERRE.getElem()) && joueur2.equals(CISEAU.getElem()) ){
+        else if(joueur1.equals(PIERRE.getElem()) && joueur2.equals(CISEAU.getElem()) ){
             return 1;
         }
-        
-        if(joueur1.equals(CISEAU.getElem()) && joueur2.equals(PIERRE.getElem()) ){
-            return 2;
+        else if(joueur1.equals(CISEAU.getElem()) && joueur2.equals(PIERRE.getElem()) ){
+            return -1;
         }
-        
-        if(joueur1.equals(FEUILLE.getElem()) && joueur2.equals(CISEAU.getElem()) ){
-            return 2;
+        else if(joueur1.equals(FEUILLE.getElem()) && joueur2.equals(CISEAU.getElem()) ){
+            return -1;
         }
-        
-        if(joueur1.equals(CISEAU.getElem()) && joueur2.equals(FEUILLE.getElem()) ){
+        else if(joueur1.equals(CISEAU.getElem()) && joueur2.equals(FEUILLE.getElem()) ){
             return 1;
         }
-        
-        return -1;
+        else return 0;
     }
 }
