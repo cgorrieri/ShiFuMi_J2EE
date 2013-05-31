@@ -98,7 +98,7 @@ public class PlayerSessionBean implements PlayerSessionBeanLocal {
     private void send(Update u) throws JMSException {
         // envoi du défis dans le topic
         ObjectMessage message = topicSession.createObjectMessage(u);
-        topicPublisher.publish(message, DeliveryMode.PERSISTENT, 0, 100);
+        topicPublisher.publish(message, DeliveryMode.PERSISTENT, 0, 1000);
     }
 
     @Override
@@ -166,7 +166,7 @@ public class PlayerSessionBean implements PlayerSessionBeanLocal {
     
     @Override
     public boolean isMessageForMe(Long id) {
-        return player.getId().equals(id);
+        return (id == null || player.getId().equals(id));
     }
     
     @Override

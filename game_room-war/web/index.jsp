@@ -91,6 +91,8 @@
                          PlayerSessionBeanLocal psb = (PlayerSessionBeanLocal) session.getAttribute("PSB");
                          psb.deconnexion();
                          session.removeAttribute("PSB");
+                         session.removeAttribute("FTDisplay");
+                         
                          %>
                                 <div class="ok">Vous avez bien été déconnecté. A bientôt !
                                 </div>

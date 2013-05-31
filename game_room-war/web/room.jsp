@@ -118,7 +118,6 @@
                 <%
                     //session.setAttribute("FTDisplay", true);
                     if (session.getAttribute("FTDisplay") == null) {
-                        System.out.println("set attribute FirstTime");
                         firstTime = true;
                         session.setAttribute("FTDisplay", firstTime);
                     } else {
@@ -127,20 +126,17 @@
 
                     try {
                         if (firstTime) {
-                            System.out.println("FirstTime");
                             firstTime = false;
                             session.setAttribute("FTDisplay", firstTime);
                         } else {
-                            System.out.println("Wait message");
                             boolean goOn = false;
                             Update u = null;
                             // Tant que le message ne nous est pas addressé
                             while (!goOn) {
                                 message = (ObjectMessage) subscriber.receive();
                                 u = (Update) message.getObject();
-                                goOn = u.dest != null && psb.isMessageForMe(u.dest);
+                                goOn = psb.isMessageForMe(u.dest);
                             }
-                            System.out.println("Mmessage received");
                             if (u.type == TypeUpdate.CONNEXION) {
                             %>
                             <div class="ok">
@@ -162,7 +158,7 @@
                             } else if (u.type == TypeUpdate.ANNULATION) {
                                 // psb.removeDefis               
                             } else if (u.type == TypeUpdate.DEFI) {
-                                if (psb.addDefis(u.dest)) {
+                                if (psb.addDefis(u.id)) {
                             %>
                             <div class="ok">
                                 Le joueur <%= u.pseudo%> vous a défié
