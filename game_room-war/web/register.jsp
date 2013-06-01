@@ -83,14 +83,16 @@ $(document).ready(function() {
 
             PlayerSessionBeanLocal playerSession = (PlayerSessionBeanLocal) o;
             Player player = new Player(pseudo, email, mdp);
-            playerSession.persist(player);
+            playerSession.register(player);
+            session.setAttribute("PlayerId", playerSession.getPlayer().getId());
+            session.setAttribute("PSB", playerSession);
             
     %>
         <div class="message">
             <div class="ok">
                 Inscription reussite, Bienvenue sur SHI-FU-MI
                 <script type="text/javascript">
-                    window.location.href='index.jsp';
+                    window.location.href='room.jsp';
                 </script>
             </div>
         </div>

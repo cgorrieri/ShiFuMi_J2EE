@@ -1,4 +1,3 @@
-<%@page import="enterprise.game_room_ejb.mdb.UpdateAcceptation"%>
 <%@page import="enterprise.game_room_ejb.ejb.session.GameSessionBeanLocal"%>
 <%@page import="enterprise.game_room_ejb.mdb.Update"%>
 <%@page import="enterprise.game_room_ejb.mdb.TypeUpdate"%>
@@ -32,7 +31,6 @@
 
     // methode d'init override
     public void jspInit() {
-        System.out.println("jspInit");
         try {
             InitialContext ic = new InitialContext();
             connectionFactory = (ConnectionFactory) ic.lookup("jms/ConnectionFactory");
@@ -158,9 +156,7 @@
                             </div>
                             <%
                             } else if (u.type == TypeUpdate.ACCEPTATION) {
-                                UpdateAcceptation ua = (UpdateAcceptation) u;
-                                ua.gsb.setJ1(psb.getPlayer());
-                                session.setAttribute("GSB", ua.gsb);
+                                session.setAttribute("GSB", psb.getgSBL());
                             %>
                             <div class="ok">
                                 Le joueur <%= u.pseudo%> à accepter le défi
@@ -172,7 +168,6 @@
                             } else if (u.type == TypeUpdate.ANNULATION) {
                                 // psb.removeDefis               
                             } else if (u.type == TypeUpdate.DEFI) {
-                                if (psb.addDefis(u.id)) {
                             %>
                             <div class="ok">
                                 Le joueur <%= u.pseudo%> vous a défié
@@ -180,7 +175,6 @@
                             <%
                             }
                         }
-                    }
                 %>
                 <!-- <div class="erreur">
                     Vous ne pouvez pas effectuer cette action
@@ -259,7 +253,8 @@
         <%                            }
         %>
         <script type="text/javascript">
-            window.location.reload(true);
+            //window.location.reload(true);
+            window.location = window.location.pathname;
         </script>
     </body>
 </html>

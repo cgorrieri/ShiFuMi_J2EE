@@ -8,6 +8,8 @@ import enterprise.game_room_ejb.common.PlayerNotFoundException;
 import enterprise.game_room_ejb.persistence.Player;
 import java.util.List;
 import javax.ejb.Local;
+import javax.persistence.EntityExistsException;
+import javax.persistence.PersistenceException;
 
 /**
  *
@@ -15,8 +17,6 @@ import javax.ejb.Local;
  */
 @Local
 public interface PlayerSessionBeanLocal {
-    void persist(Object o);
-    
     List getAllPlayers();
     
     List getConnectedPlayers();
@@ -35,7 +35,13 @@ public interface PlayerSessionBeanLocal {
     
     void defier(Long id);
 
-    boolean addDefis(Long id);
+    boolean addDefis(Player p);
     
     boolean isMessageForMe(Long id);
+
+    public enterprise.game_room_ejb.ejb.session.GameSessionBeanLocal getgSBL();
+
+    public void startGame(enterprise.game_room_ejb.ejb.session.GameSessionBeanLocal gSBL);
+
+    void register(Player player) throws PersistenceException, EntityExistsException;
 }

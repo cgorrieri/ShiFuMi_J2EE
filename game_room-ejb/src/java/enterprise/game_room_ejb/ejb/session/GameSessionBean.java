@@ -18,10 +18,12 @@ public class GameSessionBean implements GameSessionBeanLocal {
 
     private Player j1, j2;
 
+    @Override
     public void setJ1(Player j1) {
         this.j1 = j1;
     }
 
+    @Override
     public void setJ2(Player j2) {
         this.j2 = j2;
     }

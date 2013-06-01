@@ -4,11 +4,13 @@
  */
 package enterprise.game_room_ejb.common;
 
+import java.io.Serializable;
+
 /**
  *
  * @author user
  */
-public enum EnumGame {
+public enum EnumGame implements Serializable {
     PIERRE("pierre"), FEUILLE("feuille"), CISEAU("ciseau"), UNKNOW("unknow");
     
     String elem;

@@ -7,16 +7,16 @@ package enterprise.game_room_ejb.ejb.session;
 import enterprise.game_room_ejb.common.PlayerNotFoundException;
 import enterprise.game_room_ejb.mdb.TypeUpdate;
 import enterprise.game_room_ejb.mdb.Update;
-import enterprise.game_room_ejb.mdb.UpdateAcceptation;
 import enterprise.game_room_ejb.persistence.Player;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Resource;
+import javax.ejb.EJB;
 import javax.ejb.Remove;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateful;
-import javax.jms.DeliveryMode;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
@@ -25,9 +25,10 @@ import javax.jms.TopicConnection;
 import javax.jms.TopicConnectionFactory;
 import javax.jms.TopicPublisher;
 import javax.jms.TopicSession;
-import javax.naming.InitialContext;
+import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceException;
 
 /**
  *
@@ -35,6 +36,12 @@ import javax.persistence.PersistenceContext;
  */
 @Stateful
 public class PlayerSessionBean implements PlayerSessionBeanLocal {
+    @Resource
+    SessionContext sessionContext;
+    
+    private DataSessionBeanLocal dataSB;
+    
+    private GameSessionBeanLocal gSBL = null;
     
     @Resource(mappedName = "jms/ConnexionTopicCF")
     private TopicConnectionFactory topicConnectionFactory;
@@ -101,7 +108,7 @@ public class PlayerSessionBean implements PlayerSessionBeanLocal {
     private void send(Update u) throws JMSException {
         // envoi du défis dans le topic
         ObjectMessage message = topicSession.createObjectMessage(u);
-        topicPublisher.publish(message, DeliveryMode.PERSISTENT, 0, 1000);
+        topicPublisher.publish(message);
     }
 
     @Override
@@ -120,6 +127,9 @@ public class PlayerSessionBean implements PlayerSessionBeanLocal {
         //defisLance = new ArrayList<Defi>();
         defisRecus = new ArrayList<Player>();
         
+        dataSB = (DataSessionBeanLocal) sessionContext.lookup("java:global/game_room/game_room-ejb/DataSessionBean");
+        dataSB.register(player.getId(), this);
+        
         try {
             // Init de la connexion avec le topic
             topicConnection = topicConnectionFactory.createTopicConnection();
@@ -134,6 +144,8 @@ public class PlayerSessionBean implements PlayerSessionBeanLocal {
             System.out.println("Exception occurred: " + e.toString());
         }
     }
+    
+    
     
     @Override
     @Remove
@@ -178,8 +190,7 @@ public class PlayerSessionBean implements PlayerSessionBeanLocal {
     }
     
     @Override
-    public boolean addDefis(Long id) {
-        Player p = (Player) em.find(Player.class, id);
+    public boolean addDefis(Player p) {
         defisRecus.add(p);
         return true;
     }
@@ -187,6 +198,7 @@ public class PlayerSessionBean implements PlayerSessionBeanLocal {
     @Override
     public void defier(Long id) {
         try {
+            dataSB.getClient(id).addDefis(player);
             // création du defi
             Update d = new Update(player.getId(), player.getPseudo(), TypeUpdate.DEFI, id);
             //defisLance.add(d);
@@ -200,24 +212,43 @@ public class PlayerSessionBean implements PlayerSessionBeanLocal {
     public GameSessionBeanLocal accepterDefi(Long id) {
         // On envoi le message comme quoi on a accepter
         try {
-            GameSessionBeanLocal gsb = new GameSessionBean();
-            gsb.setJ2(player);
+            gSBL = new GameSessionBean();
+            gSBL.setJ2(player);
+            
+            dataSB.getClient(id).startGame(gSBL);
             // création du defi
-            Update u = new UpdateAcceptation(player.getId(), player.getPseudo(), id, gsb);
-            //defisLance.add(d);
+            Update u = new Update(player.getId(), player.getPseudo(), TypeUpdate.ACCEPTATION, id);
             // envoi du défis dans le topic
             send(u);
-            return gsb;
+            return gSBL;
         } catch (JMSException ex) {
             Logger.getLogger(PlayerSessionBean.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
         }
+        return null;
         // Lancer processus de défi
         //throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    @Override
-    public void persist(Object o) {
+    public void persist(Object o) throws PersistenceException, EntityExistsException {
         em.persist(o);
+    }
+
+    @Override
+    public GameSessionBeanLocal getgSBL() {
+        return gSBL;
+    }
+
+    @Override
+    public void startGame(GameSessionBeanLocal gSBL) {
+        this.gSBL = gSBL;
+    }
+
+    @Override
+    public void register(Player player) throws PersistenceException, EntityExistsException {
+        // vérifiaction des champs
+        
+        // enregistrement
+        this.persist(player);
+        this.player = player;
     }
 }
