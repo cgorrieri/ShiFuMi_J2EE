@@ -213,7 +213,7 @@ public class PlayerSessionBean implements PlayerSessionBeanLocal {
         // On envoi le message comme quoi on a accepter
         try {
             gSBL = new GameSessionBean();
-            gSBL.setJ2(player);
+            gSBL.addPlayer(player);
             
             dataSB.getClient(id).startGame(gSBL);
             // création du defi
@@ -241,6 +241,7 @@ public class PlayerSessionBean implements PlayerSessionBeanLocal {
     @Override
     public void startGame(GameSessionBeanLocal gSBL) {
         this.gSBL = gSBL;
+        this.gSBL.addPlayer(player);
     }
 
     @Override

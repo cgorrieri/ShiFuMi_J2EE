@@ -1,3 +1,4 @@
+<%@page import="enterprise.game_room_ejb.ejb.session.GameSessionBeanLocal"%>
 <%@page import="enterprise.game_room_ejb.common.PlayerNotFoundException"%>
 <%@page import="javax.jms.QueueSender"%>
 <%@page import="javax.jms.TextMessage"%>
@@ -69,15 +70,21 @@
 
                                 playerSession.connexion(pseudo, mdp);
                                 session.setAttribute("PlayerId", playerSession.getPlayer().getId());
+                                session.setAttribute("PSB", playerSession);
+                                
+                                Object o2 = ic.lookup("java:global/game_room/game_room-ejb/GameSessionBean");
+
+                                GameSessionBeanLocal gameSession = (GameSessionBeanLocal) o2;
+                                playerSession.startGame(gameSession);
+                                session.setAttribute("GSB", playerSession.getgSBL());
                                 %>
                                 <div class="ok">Connexion réussie.<br/>
                                     Redirection vers la salle de jeux...
                                 </div>
                                 <script type="text/javascript">
-                                    window.location.href="room.jsp";
+                                    window.location.href="jeux.jsp";
                                 </script>
                                 <%
-                                session.setAttribute("PSB", playerSession);
                             } catch (PlayerNotFoundException e) {
                                 %>
                                  <div class="erreur" id="ima">Identifiant ou mot de passe invalide</div>
