@@ -27,13 +27,12 @@ import javax.jms.TopicPublisher;
 import javax.jms.TopicSession;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 
 /**
- *
- * @author user
+ * Representant d'un joueur
+ * @author Cyril
  */
 @Stateful
 public class PlayerSessionBean implements PlayerSessionBeanLocal {

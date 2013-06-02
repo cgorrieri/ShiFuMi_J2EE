@@ -7,8 +7,8 @@ package enterprise.game_room_ejb.ejb.session;
 import javax.ejb.Local;
 
 /**
- *
- * @author user
+ * Interface du singleton des joueurs en ligne
+ * @author Cyril
  */
 @Local
 public interface DataSessionBeanLocal {

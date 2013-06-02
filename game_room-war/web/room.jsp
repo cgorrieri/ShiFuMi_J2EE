@@ -166,8 +166,6 @@
                                     window.location.href="game.jsp";
                                 </script>
                             <%
-                            } else if (u.type == TypeUpdate.CHANLLENGE_CANCELED) {
-                                // psb.removeDefis               
                             } else if (u.type == TypeUpdate.CHALLENGE) {
                             %>
                             <div class="ok">

@@ -1,8 +1,8 @@
 package enterprise.game_room_ejb.common;
 
 /**
- *
- * @author user
+ * Exception quand on re trouve pas le joueur dans la base de données
+ * @author Cyril
  */
 public class PlayerNotFoundException extends Exception {
     

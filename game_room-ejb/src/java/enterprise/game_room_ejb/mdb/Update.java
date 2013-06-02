@@ -8,6 +8,7 @@ import java.io.Serializable;
 
 /**
  * Base de message envoyé par un joueur
+ * @author Cyril
  */
 public class Update implements Serializable {
     // type de la mise à jour

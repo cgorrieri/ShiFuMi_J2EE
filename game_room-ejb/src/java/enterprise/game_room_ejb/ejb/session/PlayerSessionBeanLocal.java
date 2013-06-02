@@ -12,8 +12,8 @@ import javax.persistence.EntityExistsException;
 import javax.persistence.PersistenceException;
 
 /**
- *
- * @author user
+ * Interface Locale pour le bean représentant le client
+ * @author Cyril
  */
 @Local
 public interface PlayerSessionBeanLocal {

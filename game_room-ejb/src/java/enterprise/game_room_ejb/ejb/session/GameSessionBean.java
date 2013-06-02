@@ -9,8 +9,8 @@ import java.util.concurrent.Semaphore;
 import javax.ejb.Stateful;
 
 /**
- *
- * @author user
+ * Représentant d'une instance de jeu entre deux joueurs
+ * @author Cyril
  */
 @Stateful
 public class GameSessionBean implements GameSessionBeanLocal {

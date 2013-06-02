@@ -5,12 +5,11 @@
 package enterprise.game_room_ejb.ejb.session;
 
 import enterprise.game_room_ejb.common.EnumGame;
-import enterprise.game_room_ejb.persistence.Player;
 import javax.ejb.Local;
 
 /**
- *
- * @author user
+ * Interface
+ * @author Cyril
  */
 @Local
 public interface GameSessionBeanLocal {

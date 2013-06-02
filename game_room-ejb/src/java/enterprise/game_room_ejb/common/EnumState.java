@@ -6,7 +6,7 @@ package enterprise.game_room_ejb.common;
 
 /**
  *
- * @author fabien cyril
+ * @author Fabien Cyril
  */
 public enum EnumState {
     WAITING, PLAYING, DECONNECTED;

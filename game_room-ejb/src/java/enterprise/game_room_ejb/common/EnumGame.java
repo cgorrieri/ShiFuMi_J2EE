@@ -7,8 +7,8 @@ package enterprise.game_room_ejb.common;
 import java.io.Serializable;
 
 /**
- *
- * @author user
+ * Enumération représentant les choix dans le jeu
+ * @author Fabien
  */
 public enum EnumGame implements Serializable {
     ROCK, PAPER, SCISSORS, UNKNOW;

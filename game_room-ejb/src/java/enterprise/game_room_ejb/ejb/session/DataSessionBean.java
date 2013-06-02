@@ -9,8 +9,8 @@ import java.util.Map;
 import javax.ejb.Singleton;
 
 /**
- *
- * @author user
+ * Annuaire des joueurs en ligne
+ * @author Cyril
  */
 @Singleton
 public class DataSessionBean implements DataSessionBeanLocal {
