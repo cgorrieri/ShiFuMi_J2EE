@@ -113,10 +113,10 @@
                     session.setAttribute("GSB", gsb); 
                     %>
                         <script type="text/javascript">
-                                    window.location.href="jeux.jsp";
-                                </script>
+                            window.location.href="jeux.jsp";
+                        </script>
                     <%
-                }
+                } else {
 
         %>
         <div class="header">
@@ -232,9 +232,13 @@
                 </tbody>
             </table>
         </div>
+        <script type="text/javascript">
+            window.location = window.location.pathname;
+        </script>
         <%
-            } catch (Exception e) {
-                e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         } else {
         %>
@@ -252,9 +256,5 @@
         </script>
         <%                            }
         %>
-        <script type="text/javascript">
-            //window.location.reload(true);
-            window.location = window.location.pathname;
-        </script>
     </body>
 </html>

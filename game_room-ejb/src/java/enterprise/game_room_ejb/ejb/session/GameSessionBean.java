@@ -9,14 +9,13 @@ import enterprise.game_room_ejb.persistence.Player;
 import java.util.concurrent.Semaphore;
 import javax.ejb.Lock;
 import javax.ejb.LockType;
-import javax.ejb.Singleton;
 import javax.ejb.Stateful;
 
 /**
  *
  * @author user
  */
-@Singleton
+@Stateful
 @Lock(LockType.READ)
 public class GameSessionBean implements GameSessionBeanLocal {
     private Semaphore sema = new Semaphore(0);

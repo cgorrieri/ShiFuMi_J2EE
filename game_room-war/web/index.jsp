@@ -1,19 +1,13 @@
-<%@page import="enterprise.game_room_ejb.ejb.session.GameSessionBeanLocal"%>
-<%@page import="enterprise.game_room_ejb.common.PlayerNotFoundException"%>
-<%@page import="javax.jms.QueueSender"%>
-<%@page import="javax.jms.TextMessage"%>
-<%@page import="javax.jms.QueueConnection"%>
-<%@page import="java.sql.Connection"%>
-<%@page import="javax.jms.QueueSession"%>
-<%@page import="javax.jms.QueueConnectionFactory"%>
-<%@page import="javax.jms.Queue"%>
 <%@page import="javax.naming.InitialContext"%>
 <%@page import="javax.jms.JMSException"%>
 <%@page import="javax.annotation.Resource"%>
 <%@page import="java.io.Console"%>
 <%@page import="java.util.List"%>
 <%@page import="enterprise.game_room_ejb.ejb.session.PlayerSessionBeanLocal"%>
+<%@page import="enterprise.game_room_ejb.ejb.session.GameSessionBeanLocal"%>
+<%@page import="enterprise.game_room_ejb.common.PlayerNotFoundException"%>
 <%@page import="enterprise.game_room_ejb.persistence.Player"%>
+
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -72,17 +66,17 @@
                                 session.setAttribute("PlayerId", playerSession.getPlayer().getId());
                                 session.setAttribute("PSB", playerSession);
                                 
-                                Object o2 = ic.lookup("java:global/game_room/game_room-ejb/GameSessionBean");
-
-                                GameSessionBeanLocal gameSession = (GameSessionBeanLocal) o2;
-                                playerSession.startGame(gameSession);
-                                session.setAttribute("GSB", playerSession.getgSBL());
+//                                Object o2 = ic.lookup("java:global/game_room/game_room-ejb/GameSessionBean");
+//
+//                                GameSessionBeanLocal gameSession = (GameSessionBeanLocal) o2;
+//                                playerSession.startGame(gameSession);
+//                                session.setAttribute("GSB", playerSession.getgSBL());
                                 %>
                                 <div class="ok">Connexion réussie.<br/>
                                     Redirection vers la salle de jeux...
                                 </div>
                                 <script type="text/javascript">
-                                    window.location.href="jeux.jsp";
+                                    window.location.href="room.jsp";
                                 </script>
                                 <%
                             } catch (PlayerNotFoundException e) {
@@ -99,6 +93,7 @@
                          PlayerSessionBeanLocal psb = (PlayerSessionBeanLocal) session.getAttribute("PSB");
                          psb.deconnexion();
                          session.removeAttribute("PSB");
+                         session.removeAttribute("GSB");
                          session.removeAttribute("FTDisplay");
                          
                          %>
