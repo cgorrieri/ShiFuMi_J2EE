@@ -5,6 +5,7 @@
 package enterprise.game_room_ejb.ejb.session;
 
 import enterprise.game_room_ejb.common.EnumGame;
+import enterprise.game_room_ejb.persistence.Player;
 import javax.ejb.Local;
 
 /**
@@ -15,11 +16,11 @@ import javax.ejb.Local;
 public interface GameSessionBeanLocal {
     void sendChoice(Long id, EnumGame j);
 
-    public int getResult(java.lang.Long id);
+    public int getResult(Long id);
 
-    public int getTour();
+    public int getStep();
 
-    public void addPlayer(enterprise.game_room_ejb.persistence.Player j1);
+    public void addPlayer(PlayerSessionBeanLocal j1);
 
-    public enterprise.game_room_ejb.common.EnumGame getOtherVal(Long id);
+    public EnumGame getOtherVal(Long id);
 }

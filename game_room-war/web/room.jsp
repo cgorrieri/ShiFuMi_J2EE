@@ -1,6 +1,3 @@
-<%@page import="enterprise.game_room_ejb.ejb.session.GameSessionBeanLocal"%>
-<%@page import="enterprise.game_room_ejb.mdb.Update"%>
-<%@page import="enterprise.game_room_ejb.mdb.TypeUpdate"%>
 <%@page import="javax.jms.ObjectMessage"%>
 <%@page import="javax.jms.Connection"%>
 <%@page import="javax.jms.Session"%>
@@ -15,6 +12,9 @@
 <%@page import="java.io.Console"%>
 <%@page import="java.util.List"%>
 <%@page import="enterprise.game_room_ejb.ejb.session.PlayerSessionBeanLocal"%>
+<%@page import="enterprise.game_room_ejb.ejb.session.GameSessionBeanLocal"%>
+<%@page import="enterprise.game_room_ejb.mdb.Update"%>
+<%@page import="enterprise.game_room_ejb.mdb.TypeUpdate"%>
 <%@page import="enterprise.game_room_ejb.persistence.Player"%>
 
 <%! // Fera partie de la classe rendu du jsp
@@ -105,15 +105,15 @@
 
                 String defier = request.getParameter("defier");
                 if (defier != null && !"".equals(defier)) {
-                    psb.defier(Long.valueOf(defier));
+                    psb.challengePlayer(Long.valueOf(defier));
                 }
                 String accepter = request.getParameter("accepter");
                 if (accepter != null && !"".equals(accepter)) {
-                    GameSessionBeanLocal gsb = psb.accepterDefi(Long.valueOf(accepter));
+                    GameSessionBeanLocal gsb = psb.acceptChallenge(Long.valueOf(accepter));
                     session.setAttribute("GSB", gsb); 
                     %>
                         <script type="text/javascript">
-                            window.location.href="jeux.jsp";
+                            window.location.href="game.jsp";
                         </script>
                     <%
                 } else {
@@ -155,19 +155,20 @@
                                 Le joueur <%= u.pseudo%> s'est déconnecté
                             </div>
                             <%
-                            } else if (u.type == TypeUpdate.ACCEPTATION) {
-                                session.setAttribute("GSB", psb.getgSBL());
+                            } else if (u.type == TypeUpdate.CHANLLENGE_ACCEPTED) {
+                                session.setAttribute("GSB", psb.getGameStub());
+                                session.setAttribute("FTDisplay", true);
                             %>
                             <div class="ok">
                                 Le joueur <%= u.pseudo%> à accepter le défi
                             </div>
                             <script type="text/javascript">
-                                    window.location.href="jeux.jsp";
+                                    window.location.href="game.jsp";
                                 </script>
                             <%
-                            } else if (u.type == TypeUpdate.ANNULATION) {
+                            } else if (u.type == TypeUpdate.CHANLLENGE_CANCELED) {
                                 // psb.removeDefis               
-                            } else if (u.type == TypeUpdate.DEFI) {
+                            } else if (u.type == TypeUpdate.CHALLENGE) {
                             %>
                             <div class="ok">
                                 Le joueur <%= u.pseudo%> vous a défié
@@ -183,8 +184,8 @@
         </div>
 
         <div class="carre_connexion">
-            Bonjour <%out.print(psb.getPlayer().getPseudo() + " (" + psb.getPlayer().getId() + ")");%> <br/>
-            <% out.print(psb.getPlayer().getScore());%> points <br/>
+            Bonjour <%= psb.getPlayer().getPseudo() %> (<%= psb.getPlayer().getId() %>) <br/>
+            <%= psb.getPlayer().getScore() %> points <br/>
             <a href="index.jsp?deconnexion=true">Déconnexion</a>
         </div>
         <script type="text/javascript">
@@ -226,7 +227,7 @@
                 <tbody>
                     <%
                         // Lister tous les participants
-                        List defiant = psb.getDefies();
+                        List defiant = psb.getChallenges();
                         out.print(defiantstToHTML(defiant));
                     %>
                 </tbody>

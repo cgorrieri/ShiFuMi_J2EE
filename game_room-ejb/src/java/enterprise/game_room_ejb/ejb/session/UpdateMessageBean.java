@@ -41,9 +41,9 @@ public class UpdateMessageBean implements MessageListener {
                     System.out.print("<!!"+u.pseudo+" est connecte!!>");
                 } else if(u.type == TypeUpdate.DECONNEXION) {
                     System.out.print("<!!"+u.pseudo+" est deconnecte!!>");
-                } else if(u.type == TypeUpdate.ACCEPTATION) {
+                } else if(u.type == TypeUpdate.CHANLLENGE_ACCEPTED) {
                     System.out.print("<!!"+u.pseudo+" à accepter le defi de "+u.dest+"!!>");
-                } else if(u.type == TypeUpdate.ANNULATION) {
+                } else if(u.type == TypeUpdate.CHANLLENGE_CANCELED) {
                     System.out.print("<!! Le defi de "+u.pseudo+" à "+u.dest+" est annule!!>");
                 } else {
                     System.out.println("<!!"+u.pseudo+" à défié "+u.dest+"!!>");

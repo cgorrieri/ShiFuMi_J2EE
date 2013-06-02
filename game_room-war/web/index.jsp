@@ -1,5 +1,4 @@
 <%@page import="javax.naming.InitialContext"%>
-<%@page import="javax.jms.JMSException"%>
 <%@page import="javax.annotation.Resource"%>
 <%@page import="java.io.Console"%>
 <%@page import="java.util.List"%>
@@ -65,12 +64,7 @@
                                 playerSession.connexion(pseudo, mdp);
                                 session.setAttribute("PlayerId", playerSession.getPlayer().getId());
                                 session.setAttribute("PSB", playerSession);
-                                
-//                                Object o2 = ic.lookup("java:global/game_room/game_room-ejb/GameSessionBean");
-//
-//                                GameSessionBeanLocal gameSession = (GameSessionBeanLocal) o2;
-//                                playerSession.startGame(gameSession);
-//                                session.setAttribute("GSB", playerSession.getgSBL());
+
                                 %>
                                 <div class="ok">Connexion réussie.<br/>
                                     Redirection vers la salle de jeux...

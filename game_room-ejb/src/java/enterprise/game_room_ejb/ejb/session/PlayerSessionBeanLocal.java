@@ -27,21 +27,23 @@ public interface PlayerSessionBeanLocal {
     
     void deconnexion();
     
-    GameSessionBeanLocal accepterDefi(Long id);
+    GameSessionBeanLocal acceptChallenge(Long id);
     
     Player getPlayer();
 
-    List<Player> getDefies();
+    List<Player> getChallenges();
     
-    void defier(Long id);
+    void challengePlayer(Long id);
 
-    boolean addDefis(Player p);
+    boolean addChallenge(Player p);
     
     boolean isMessageForMe(Long id);
 
-    public enterprise.game_room_ejb.ejb.session.GameSessionBeanLocal getgSBL();
+    public GameSessionBeanLocal getGameStub();
 
-    public void startGame(enterprise.game_room_ejb.ejb.session.GameSessionBeanLocal gSBL);
+    public void startGame(GameSessionBeanLocal gSBL);
 
     void register(Player player) throws PersistenceException, EntityExistsException;
+
+    void endGame();
 }

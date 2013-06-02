@@ -11,17 +11,7 @@ import java.io.Serializable;
  * @author user
  */
 public enum EnumGame implements Serializable {
-    PIERRE("pierre"), FEUILLE("feuille"), CISEAU("ciseau"), UNKNOW("unknow");
-    
-    String elem;
-    
-    EnumGame(String elem){
-        this.elem = elem;
-    }
-    
-    public String getElem(){
-        return elem;
-    }
+    ROCK, PAPER, SCISSORS, UNKNOW;
     
     /**
      * Retourne le numero de joueur qui gagne
@@ -30,22 +20,22 @@ public enum EnumGame implements Serializable {
      * @return 0 si ex-equo ou non défini, 1 si le joueur 1 gagne, -1 s'il pert
      */
     public static int getWhoWin(EnumGame joueur1, EnumGame joueur2){
-        if(joueur1 == PIERRE && joueur2 == FEUILLE){
+        if(joueur1 == ROCK && joueur2 == PAPER){
             return -1;
         }
-        else if(joueur1 == FEUILLE && joueur2 == PIERRE ){
+        else if(joueur1 == PAPER && joueur2 == ROCK ){
             return 1;
         }
-        else if(joueur1 == PIERRE && joueur2 == CISEAU ){
+        else if(joueur1 == ROCK && joueur2 == SCISSORS ){
             return 1;
         }
-        else if(joueur1 == CISEAU && joueur2 == PIERRE ){
+        else if(joueur1 == SCISSORS && joueur2 == ROCK ){
             return -1;
         }
-        else if(joueur1 == FEUILLE && joueur2 == CISEAU ){
+        else if(joueur1 == PAPER && joueur2 == SCISSORS ){
             return -1;
         }
-        else if(joueur1 == CISEAU && joueur2 == FEUILLE ){
+        else if(joueur1 == SCISSORS && joueur2 == PAPER ){
             return 1;
         }
         else return 0;

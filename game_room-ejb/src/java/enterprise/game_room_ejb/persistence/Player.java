@@ -21,7 +21,7 @@ import javax.validation.constraints.NotNull;
  */
 @Entity
 @NamedQueries(
-    value={@NamedQuery(name="findPlayer", query="select object(c) from Player c where c.pseudo= :pseudo and c.mdp= :mdp"),
+    value={@NamedQuery(name="findPlayer", query="select object(c) from Player c where c.pseudo= :pseudo and c.password= :password"),
     @NamedQuery(name="getAllPlayers", query="select object(c) from Player c"),
     @NamedQuery(name="getAllPlayersExceptPseudo", query="select object(c) from Player c where c.pseudo <> :pseudo"),
     @NamedQuery(name="getConnectedPlayersExceptPseudo", query="select object(c) from Player c where c.pseudo <> :pseudo and c.connected = 1")}
@@ -38,7 +38,7 @@ public class Player implements Serializable {
     @NotNull
     private String email;
     @NotNull
-    private String mdp;
+    private String password;
     @NotNull
     private boolean connected = false;
 //    
@@ -48,9 +48,32 @@ public class Player implements Serializable {
 //    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER, mappedBy = "defiant")
 //    private List<Defi> defiesLance;
 //    
-    private int points;
-    private EnumState etat;
+    private int played = 0;
+    private int won = 0;
+    private EnumState state;
 
+    
+
+    public Player() {
+        this.pseudo = "pseudo";
+        this.email = "email";
+        this.password = "1234";
+        state = EnumState.DECONNECTED;
+    }
+
+    public Player(String pseudo, String email, String mdp) {
+        this.pseudo = pseudo;
+        this.email = email;
+        this.password = mdp;
+    }
+    
+    public Player(String pseudo, String email, String mdp, EnumState etat){
+        this.pseudo = pseudo;
+        this.email = email;
+        this.password = mdp;
+        this.state = etat;
+    }
+    
     public Long getId() {
         return id;
     }
@@ -75,12 +98,12 @@ public class Player implements Serializable {
         this.email = email;
     }
 
-    public String getMdp() {
-        return mdp;
+    public String getPassword() {
+        return password;
     }
 
-    public void setMdp(String mdp) {
-        this.mdp = mdp;
+    public void setPassword(String pswd) {
+        this.password = pswd;
     }
     
     public boolean getConnected() {
@@ -91,52 +114,31 @@ public class Player implements Serializable {
         connected = b;
     }
     
-
-    public Player() {
-        this.pseudo = "pseudo";
-        this.email = "email";
-        this.mdp = "mdp";
-        points = 0;
-        etat = EnumState.ATTENTE;
-    }
-
-    public Player(String pseudo, String email, String mdp) {
-        this.pseudo = pseudo;
-        this.email = email;
-        this.mdp = mdp;
-    }
-    
-    public Player(String pseudo, String email, String mdp, EnumState etat, int po){
-        this.pseudo = pseudo;
-        this.email = email;
-        this.mdp = mdp;
-        this.points = po;
-        this.etat = etat;
-    }
-    
-    public int getScore() {
+    public double getScore() {
+        if(played > 0) return won/played;
         return 0;
     }
     
-    public String getEtat() {
-        return "En Attente";
+    /**
+     * 
+     * @param win -1 or 1
+     */
+    public void addScore(int win) {
+        played++;
+        won += win;
     }
-
-//    public List<Defi> getDefiesRecu() {
-//        return defiesRecu;
-//    }
-//
-//    public void setDefiesRecu(List<Defi> defiesRecu) {
-//        this.defiesRecu = defiesRecu;
-//    }
-//
-//    public List<Defi> getDefiesLance() {
-//        return defiesLance;
-//    }
-//
-//    public void setDefiesLance(List<Defi> defiesLance) {
-//        this.defiesLance = defiesLance;
-//    }
+    
+    public EnumState getEtat() {
+        return state;
+    }
+    
+    /**
+     * Modification de l'state du joueur
+     * @param state 
+     */
+    public void setEtat(EnumState etat){
+        this.state = etat;
+    }
 
     @Override
     public int hashCode() {
@@ -160,49 +162,8 @@ public class Player implements Serializable {
 
     @Override
     public String toString() {
-        return "enterprise.belli_gorrieri_lestel_shifumi_ejb.persistence.Player1[ id=" + id + " ]";
-    }
-    
-        /**
-     * Nombre de point à ajouter au score
-     * Avec verification pour ne par aller en dessous de zero
-     * @param nbToAdd 
-     */
-    public void addScore(int nbToAdd){
-        if((points + nbToAdd) < 0) {
-            points = 0;
-        }
-        points += nbToAdd;
-    }
-    
-    /**
-     * Modification du score
-     * @param score 
-     */
-    public void setScore(int score){
-        points = score;
-    }   
-    
-    /**
-     * Modification de l'etat du joueur
-     * @param etat 
-     */
-    public void setEtat(EnumState etat){
-        this.etat = etat;
+        return "Player{" + "id=" + id + ", pseudo=" + pseudo + ", email=" + email + ", played=" + played + ", won=" + won + ", state=" + state + '}';
     }
 
-//    /**
-//     * Récupère tous les défies lancé
-//     * @return 
-//     */
-//    @Transient
-//    //since the signature starts with a get, need to annotate it as @Transient
-//    public ArrayList getDefiesRecu() {
-//        ArrayList list = new ArrayList();
-//        Iterator c = defiRecu.iterator();
-//        while (c.hasNext()) {
-//            list.add((Player)c.next());
-//        }
-//        return list;
-//    }
+    
 }

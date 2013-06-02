@@ -15,15 +15,15 @@
                 
                 Long playerId = (Long) session.getAttribute("PlayerId");
 
-                String jouer = request.getParameter("choice");
-                if (jouer != null && !"".equals(jouer)) {
+                String choice = request.getParameter("choice");
+                if (choice != null && !"".equals(choice)) {
                     EnumGame e = EnumGame.UNKNOW;
-                    if (jouer.equals("c")) {
-                        e = EnumGame.CISEAU;
-                    } else if (jouer.equals("f")) {
-                        e = EnumGame.FEUILLE;
-                    } else if (jouer.equals("p")) {
-                        e = EnumGame.PIERRE;
+                    if (choice.equals("s")) {
+                        e = EnumGame.SCISSORS;
+                    } else if (choice.equals("p")) {
+                        e = EnumGame.PAPER;
+                    } else if (choice.equals("r")) {
+                        e = EnumGame.ROCK;
                     }
                     gsb.sendChoice(playerId, e);
                     
@@ -57,31 +57,31 @@
 </div>
                     <%
                 }
-                if(gsb.getTour() > 0) {
+                if(gsb.getStep() > 0) {
         %>
         <div class="jeux">
             <div class="headNom"> Vous </div>
             <div class="joueurhaut">
                 <center>
                     <form action="" method="GET">
-                        <a class="ima" id="pierre" href="?choice=p"><img src="images/pierre.png"/></a>
-                        <a class="ima" id="papier" href="?choice=f"><img src="images/papier.png"/></a>
-                        <a class="ima" id="ciseau" href="?choice=c"><img src="images/ciseau.png"/></a>
+                        <a class="ima" id="pierre" href="?choice=r"><img src="images/pierre.png"/></a>
+                        <a class="ima" id="papier" href="?choice=p"><img src="images/papier.png"/></a>
+                        <a class="ima" id="ciseau" href="?choice=s"><img src="images/ciseau.png"/></a>
                     </form>
                 </center>
             </div>
             <div class="joueurbas">
                 <center>
                     <%
-                    if (jouer != null && !"".equals(jouer)) {
+                    if (choice != null && !"".equals(choice)) {
                         switch(gsb.getOtherVal(playerId)) {
-                            case CISEAU:
+                            case SCISSORS:
                                 %><img class="ima" src="images/ciseau.png"><%
                                 break;
-                            case PIERRE:
+                            case ROCK:
                                 %><img class="ima" src="images/pierre.png"><%
                                 break;
-                            case FEUILLE:
+                            case PAPER:
                                 %><img class="ima" src="images/papier.png"><%
                                 break;
                             case UNKNOW:
@@ -102,7 +102,7 @@
                     <script type="text/javascript">
                         setTimeout(
                             function() {
-                            window.location = "index.jsp";
+                            window.location = "room.jsp";
                             },3000);
                     </script>
                     <%
